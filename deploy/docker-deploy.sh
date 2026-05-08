@@ -78,11 +78,18 @@ main() {
     # Download docker-compose.local.yml and save as docker-compose.yml
     print_info "Downloading docker-compose.yml..."
     if command_exists curl; then
-        curl -sSL "${GITHUB_RAW_URL}/docker-compose.local.yml" -o docker-compose.yml
+        curl -sSL --noproxy '*' "${GITHUB_RAW_URL}/docker-compose.local.yml" -o docker-compose.yml
     elif command_exists wget; then
-        wget -q "${GITHUB_RAW_URL}/docker-compose.local.yml" -O docker-compose.yml
+        wget -q --no-proxy "${GITHUB_RAW_URL}/docker-compose.local.yml" -O docker-compose.yml
     else
         print_error "Neither curl nor wget is installed. Please install one of them."
+        exit 1
+    fi
+    # Validate downloaded file (proxy may return error page instead of real content)
+    if ! head -1 docker-compose.yml | grep -q "version\|services\|docker-compose"; then
+        print_error "Failed to download docker-compose.yml (got invalid content)."
+        print_error "If you are behind a proxy, try: export NO_PROXY='*' and re-run this script."
+        rm -f docker-compose.yml
         exit 1
     fi
     print_success "Downloaded docker-compose.yml"
@@ -90,9 +97,16 @@ main() {
     # Download .env.example
     print_info "Downloading .env.example..."
     if command_exists curl; then
-        curl -sSL "${GITHUB_RAW_URL}/.env.example" -o .env.example
+        curl -sSL --noproxy '*' "${GITHUB_RAW_URL}/.env.example" -o .env.example
     else
-        wget -q "${GITHUB_RAW_URL}/.env.example" -O .env.example
+        wget -q --no-proxy "${GITHUB_RAW_URL}/.env.example" -O .env.example
+    fi
+    # Validate downloaded file
+    if ! head -1 .env.example | grep -q "Sub2API\|#"; then
+        print_error "Failed to download .env.example (got invalid content)."
+        print_error "If you are behind a proxy, try: export NO_PROXY='*' and re-run this script."
+        rm -f .env.example
+        exit 1
     fi
     print_success "Downloaded .env.example"
 
