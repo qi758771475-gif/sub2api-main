@@ -67,7 +67,15 @@ main() {
     # Check if deployment already exists
     if [ -f "docker-compose.yml" ] && [ -f ".env" ]; then
         print_warning "Deployment files already exist in current directory."
-        read -p "Overwrite existing files? (y/N): " -r
+        # Use /dev/tty for input when running via pipe (curl | bash)
+        if [ -t 0 ]; then
+            read -p "Overwrite existing files? (y/N): " -r
+        elif [ -e /dev/tty ]; then
+            read -p "Overwrite existing files? (y/N): " -r < /dev/tty
+        else
+            print_info "Non-interactive mode detected. Overwriting existing files."
+            REPLY="y"
+        fi
         echo
         if [[ ! $REPLY =~ ^[Yy]$ ]]; then
             print_info "Cancelled."
