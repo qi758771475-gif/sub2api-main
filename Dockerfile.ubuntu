@@ -89,7 +89,7 @@ RUN apt-get update && apt-get install -y \
     libldap-2.5-0 \
     libedit2 \
     wget \
-    su-exec \
+    gosu \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
