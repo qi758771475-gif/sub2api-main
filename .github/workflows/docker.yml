@@ -52,8 +52,8 @@ jobs:
           platforms: ${{ matrix.platform }}
           push: true
           tags: |
-            qi758771475-gif/sub2api:${{ steps.version.outputs.VERSION }}${{ matrix.tag_suffix && format('-{0}', matrix.tag_suffix) || '' }}
-            qi758771475-gif/sub2api:${{ steps.version.outputs.MAJOR }}${{ matrix.tag_suffix && format('-{0}', matrix.tag_suffix) || '' }}
+            chenqi2/sub2api:${{ steps.version.outputs.VERSION }}${{ matrix.tag_suffix && format('-{0}', matrix.tag_suffix) || '' }}
+            chenqi2/sub2api:${{ steps.version.outputs.MAJOR }}${{ matrix.tag_suffix && format('-{0}', matrix.tag_suffix) || '' }}
           build-args: |
             VERSION=${{ steps.version.outputs.VERSION }}
             COMMIT=${{ github.sha }}
