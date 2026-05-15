@@ -300,6 +300,7 @@ export default {
     add: '添加',
     invalidEmail: '请输入有效的邮箱地址',
     optional: '可选',
+    required: '必填',
     selectOption: '请选择',
     searchPlaceholder: '搜索...',
     noOptionsFound: '无匹配选项',
@@ -457,6 +458,8 @@ export default {
     invitationCodeInvalid: '邀请码无效或已被使用',
     invitationCodeValidating: '正在验证邀请码...',
     invitationCodeInvalidCannotRegister: '邀请码无效，请检查后重试',
+    affCodeForceBound: '此邀请码来自邀请链接，注册将自动绑定邀请人关系',
+    affCodeRequired: '邀请码不能为空，请通过邀请链接访问注册页面',
     oauthOrContinue: '或使用邮箱密码继续',
     linuxdo: {
       signIn: '使用 Linux.do 登录',
@@ -5039,6 +5042,8 @@ export default {
           durationDaysDesc: '被邀请用户注册后多少天内的充值产生返利。0 = 永久有效。',
           perInviteeCap: '单人返利上限',
           perInviteeCapDesc: '每个被邀请用户最多产生的返利总额。0 = 无上限。',
+          linkForceBind: '链接邀请强制绑定',
+          linkForceBindHint: '开启后，通过邀请链接注册的用户必须绑定邀请人关系，否则无法注册。未通过邀请链接访问的用户不受影响。',
           customUsers: {
             title: '专属用户配置',
             description: '为指定用户设置专属邀请码或专属返利比例。仅展示已设置过专属配置的用户。',

@@ -247,7 +247,8 @@ func (h *SettingHandler) GetSettings(c *gin.Context) {
 
 		AvailableChannelsEnabled: settings.AvailableChannelsEnabled,
 
-		AffiliateEnabled: settings.AffiliateEnabled,
+		AffiliateEnabled:       settings.AffiliateEnabled,
+		AffiliateLinkForceBind: settings.AffiliateLinkForceBind,
 	}
 
 	// OpenAI fast policy (stored under a dedicated setting key)
@@ -495,7 +496,8 @@ type UpdateSettingsRequest struct {
 	AvailableChannelsEnabled *bool `json:"available_channels_enabled"`
 
 	// Affiliate (邀请返利) feature switch
-	AffiliateEnabled *bool `json:"affiliate_enabled"`
+	AffiliateEnabled       *bool `json:"affiliate_enabled"`
+	AffiliateLinkForceBind *bool `json:"affiliate_link_force_bind"`
 
 	// OpenAI fast/flex policy (optional, only updated when provided)
 	OpenAIFastPolicySettings *dto.OpenAIFastPolicySettings `json:"openai_fast_policy_settings,omitempty"`
@@ -1364,6 +1366,12 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 				return *req.AffiliateEnabled
 			}
 			return previousSettings.AffiliateEnabled
+		}(),
+		AffiliateLinkForceBind: func() bool {
+			if req.AffiliateLinkForceBind != nil {
+				return *req.AffiliateLinkForceBind
+			}
+			return previousSettings.AffiliateLinkForceBind
 		}(),
 	}
 

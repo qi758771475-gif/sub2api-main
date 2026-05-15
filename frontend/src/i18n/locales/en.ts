@@ -300,6 +300,7 @@ export default {
     add: 'Add',
     invalidEmail: 'Please enter a valid email address',
     optional: 'optional',
+    required: 'required',
     selectOption: 'Select an option',
     searchPlaceholder: 'Search...',
     noOptionsFound: 'No options found',
@@ -458,6 +459,8 @@ export default {
     invitationCodeInvalid: 'Invalid or used invitation code',
     invitationCodeValidating: 'Validating invitation code...',
     invitationCodeInvalidCannotRegister: 'Invalid invitation code. Please check and try again',
+    affCodeForceBound: 'This invite code is from an invite link. Registration will automatically bind the inviter relationship',
+    affCodeRequired: 'Invite code cannot be empty. Please access the registration page via an invite link',
     oauthOrContinue: 'or continue with email',
     linuxdo: {
       signIn: 'Continue with Linux.do',
@@ -4876,6 +4879,8 @@ export default {
           durationDaysDesc: 'Rebate relationship expires after this many days since invitee registration. 0 = permanent.',
           perInviteeCap: 'Per-Invitee Rebate Cap',
           perInviteeCapDesc: 'Maximum total rebate from a single invitee. 0 = no limit.',
+          linkForceBind: 'Link Invite Force Bind',
+          linkForceBindHint: 'When enabled, users who register via an invite link must be bound to the inviter, otherwise registration will fail. Users not coming from an invite link are unaffected.',
           customUsers: {
             title: 'Per-User Overrides',
             description: 'Set a custom invite code or exclusive rebate rate for specific users. Lists only users that have an override applied.',

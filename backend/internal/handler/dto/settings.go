@@ -198,7 +198,8 @@ type SystemSettings struct {
 	AvailableChannelsEnabled bool `json:"available_channels_enabled"`
 
 	// Affiliate (邀请返利) feature switch
-	AffiliateEnabled bool `json:"affiliate_enabled"`
+	AffiliateEnabled       bool `json:"affiliate_enabled"`
+	AffiliateLinkForceBind bool `json:"affiliate_link_force_bind"`
 
 	// OpenAI fast/flex policy
 	OpenAIFastPolicySettings *OpenAIFastPolicySettings `json:"openai_fast_policy_settings,omitempty"`
@@ -255,7 +256,8 @@ type PublicSettings struct {
 
 	AvailableChannelsEnabled bool `json:"available_channels_enabled"`
 
-	AffiliateEnabled bool `json:"affiliate_enabled"`
+	AffiliateEnabled       bool `json:"affiliate_enabled"`
+	AffiliateLinkForceBind bool `json:"affiliate_link_force_bind"`
 }
 
 // OverloadCooldownSettings 529过载冷却配置 DTO

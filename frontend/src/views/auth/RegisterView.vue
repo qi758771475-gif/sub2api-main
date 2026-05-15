@@ -162,6 +162,32 @@
           </transition>
         </div>
 
+        <!-- Affiliate Code (Force-bound from invite link) -->
+        <div v-if="isAffCodeForceBound">
+          <label for="aff_code" class="input-label">
+            {{ t('affiliate.yourCode') }}
+            <span class="ml-1 text-xs font-normal text-red-500">({{ t('common.required') }})</span>
+          </label>
+          <div class="relative">
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
+              <Icon name="link" size="md" class="text-green-500" />
+            </div>
+            <input
+              id="aff_code"
+              type="text"
+              :value="formData.aff_code"
+              disabled
+              class="input pl-11 bg-gray-50 dark:bg-dark-800"
+            />
+          </div>
+          <div class="mt-2 flex items-center gap-2 rounded-lg bg-blue-50 px-3 py-2 dark:bg-blue-900/20">
+            <Icon name="infoCircle" size="sm" class="text-blue-600 dark:text-blue-400" />
+            <span class="text-sm text-blue-700 dark:text-blue-400">
+              {{ t('auth.affCodeForceBound') }}
+            </span>
+          </div>
+        </div>
+
         <!-- Promo Code Input (Optional) -->
         <div v-if="promoCodeEnabled">
           <label for="promo_code" class="input-label">
@@ -323,6 +349,7 @@ const registrationEnabled = ref<boolean>(true)
 const emailVerifyEnabled = ref<boolean>(false)
 const promoCodeEnabled = ref<boolean>(true)
 const invitationCodeEnabled = ref<boolean>(false)
+const affiliateLinkForceBind = ref<boolean>(false)
 const turnstileEnabled = ref<boolean>(false)
 const turnstileSiteKey = ref<string>('')
 const siteName = ref<string>('Sub2API')
@@ -380,6 +407,11 @@ const validationToastMessage = computed(() =>
   ''
 )
 
+// Whether the affiliate code is force-bound (from invite link + force-bind enabled)
+const isAffCodeForceBound = computed(() =>
+  affiliateLinkForceBind.value && !!formData.aff_code.trim()
+)
+
 watch(validationToastMessage, (value, previousValue) => {
   if (value && value !== previousValue) {
     appStore.showError(value)
@@ -405,6 +437,7 @@ onMounted(async () => {
     emailVerifyEnabled.value = settings.email_verify_enabled
     promoCodeEnabled.value = settings.promo_code_enabled
     invitationCodeEnabled.value = settings.invitation_code_enabled
+    affiliateLinkForceBind.value = settings.affiliate_link_force_bind
     turnstileEnabled.value = settings.turnstile_enabled
     turnstileSiteKey.value = settings.turnstile_site_key || ''
     siteName.value = settings.site_name || 'Sub2API'
@@ -663,6 +696,15 @@ function validateForm(): boolean {
     }
   }
 
+  // Affiliate force-bind validation: when enabled and aff_code came from URL, it must be present
+  if (affiliateLinkForceBind.value && !formData.aff_code.trim()) {
+    const stored = loadAffiliateReferralCode()
+    if (!stored) {
+      errorMessage.value = t('auth.affCodeRequired')
+      isValid = false
+    }
+  }
+
   // Turnstile validation
   if (turnstileEnabled.value && !turnstileToken.value) {
     errors.turnstile = t('auth.completeVerification')
@@ -725,6 +767,14 @@ async function handleRegister(): Promise<void> {
 
   try {
     const affCode = formData.aff_code.trim() || loadAffiliateReferralCode()
+
+    // Force-bind: block if no affiliate code available
+    if (affiliateLinkForceBind.value && !affCode) {
+      errorMessage.value = t('auth.affCodeRequired')
+      isLoading.value = false
+      return
+    }
+
     if (affCode) {
       formData.aff_code = affCode
     }

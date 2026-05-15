@@ -485,6 +485,7 @@ export interface SystemSettings {
 
   // Affiliate (邀请返利) feature switch
   affiliate_enabled: boolean;
+  affiliate_link_force_bind: boolean;
 
   // 外部充值（购买订阅）iframe 嵌入
   purchase_subscription_enabled: boolean;
@@ -657,6 +658,7 @@ export interface UpdateSettingsRequest {
 
   // Affiliate (邀请返利) feature switch
   affiliate_enabled?: boolean;
+  affiliate_link_force_bind?: boolean;
 
   // 外部充值（购买订阅）iframe 嵌入
   purchase_subscription_enabled?: boolean;

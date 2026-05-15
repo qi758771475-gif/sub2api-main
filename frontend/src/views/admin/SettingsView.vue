@@ -4359,6 +4359,18 @@
                 </p>
               </div>
 
+              <div class="flex items-center justify-between">
+                <div>
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {{ t('admin.settings.features.affiliate.linkForceBind') }}
+                  </label>
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                    {{ t('admin.settings.features.affiliate.linkForceBindHint') }}
+                  </p>
+                </div>
+                <Toggle v-model="form.affiliate_link_force_bind" />
+              </div>
+
               <!-- 专属用户管理 -->
               <div class="border-t border-gray-100 pt-6 dark:border-dark-700">
                 <div class="mb-3 flex items-center justify-between">
@@ -5995,6 +6007,7 @@ const form = reactive<SettingsForm>({
   available_channels_enabled: false,
   // Affiliate (邀请返利) feature switch
   affiliate_enabled: false,
+  affiliate_link_force_bind: false,
 });
 
 const authSourceDefaults = reactive<AuthSourceDefaultsState>(
@@ -6940,6 +6953,7 @@ async function saveSettings() {
       available_channels_enabled: form.available_channels_enabled,
       // Affiliate (邀请返利) feature switch
       affiliate_enabled: form.affiliate_enabled,
+      affiliate_link_force_bind: form.affiliate_link_force_bind,
     };
 
     // 仅当 openai_fast_policy_settings 已成功从后端加载时才回写，
