@@ -9,7 +9,7 @@
 
 ARG NODE_IMAGE=node:24-alpine
 ARG GOLANG_IMAGE=golang:1.26.2-alpine
-ARG UBUNTU_IMAGE=ubuntu:22.04
+ARG UBUNTU_IMAGE=ubuntu:24.04
 ARG POSTGRES_IMAGE=postgres:18-alpine
 ARG GOPROXY=https://goproxy.cn,direct
 ARG GOSUMDB=sum.golang.google.cn
@@ -74,7 +74,7 @@ FROM ${POSTGRES_IMAGE} AS pg-client
 FROM ${UBUNTU_IMAGE}
 
 LABEL maintainer="qi758771475-gif"
-LABEL description="Sub2API - AI API Gateway Platform (Ubuntu 22.04)"
+LABEL description="Sub2API - AI API Gateway Platform (Ubuntu 24.04)"
 LABEL org.opencontainers.image.source="https://github.com/qi758771475-gif/sub2api-main"
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -91,6 +91,7 @@ RUN echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99no-check-
     libedit2 \
     wget \
     su-exec \
+    curl \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
