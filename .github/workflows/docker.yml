@@ -54,6 +54,7 @@ jobs:
           tags: |
             chenqi2/sub2api:${{ steps.version.outputs.VERSION }}${{ matrix.tag_suffix && format('-{0}', matrix.tag_suffix) || '' }}
             chenqi2/sub2api:${{ steps.version.outputs.MAJOR }}${{ matrix.tag_suffix && format('-{0}', matrix.tag_suffix) || '' }}
+            ${{ matrix.tag_suffix == '' && 'chenqi2/sub2api:latest' || '' }}
           build-args: |
             VERSION=${{ steps.version.outputs.VERSION }}
             COMMIT=${{ github.sha }}
