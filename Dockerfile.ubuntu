@@ -79,13 +79,14 @@ LABEL org.opencontainers.image.source="https://github.com/qi758771475-gif/sub2ap
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99no-check-valid-until && \
+    apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     tzdata \
     libpq5 \
     zstd \
     liblz4-1 \
-    krb5-libs \
+    libkrb5-3 \
     libldap-2.5-0 \
     libedit2 \
     wget \
