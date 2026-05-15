@@ -13,10 +13,10 @@ jobs:
       matrix:
         include:
           - dockerfile: Dockerfile
-            platforms: linux/amd64,linux/arm64,linux/arm/v7
+            platforms: linux/amd64,linux/arm64
             tag_suffix: ''
           - dockerfile: Dockerfile.ubuntu
-            platforms: linux/amd64,linux/arm64,linux/arm/v7
+            platforms: linux/amd64,linux/arm64
             tag_suffix: ubuntu-latest
 
     steps:
