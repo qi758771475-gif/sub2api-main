@@ -13,10 +13,10 @@ jobs:
       matrix:
         include:
           - dockerfile: Dockerfile
-            platform: linux/amd64
+            platforms: linux/amd64,linux/arm64,linux/arm/v7
             tag_suffix: ''
           - dockerfile: Dockerfile.ubuntu
-            platform: linux/amd64
+            platforms: linux/amd64,linux/arm64,linux/arm/v7
             tag_suffix: ubuntu-latest
 
     steps:
@@ -49,7 +49,7 @@ jobs:
         with:
           context: .
           file: ./${{ matrix.dockerfile }}
-          platforms: ${{ matrix.platform }}
+          platforms: ${{ matrix.platforms }}
           push: true
           tags: |
             chenqi2/sub2api:${{ steps.version.outputs.VERSION }}${{ matrix.tag_suffix && format('-{0}', matrix.tag_suffix) || '' }}
