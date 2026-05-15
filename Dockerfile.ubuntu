@@ -9,7 +9,7 @@
 
 ARG NODE_IMAGE=node:24-alpine
 ARG GOLANG_IMAGE=golang:1.26.2-alpine
-ARG UBUNTU_IMAGE=ubuntu:24.04
+ARG DEBIAN_IMAGE=debian:bookworm-slim
 ARG POSTGRES_IMAGE=postgres:18-alpine
 ARG GOPROXY=https://goproxy.cn,direct
 ARG GOSUMDB=sum.golang.google.cn
@@ -69,12 +69,12 @@ RUN VERSION_VALUE="${VERSION}" && \
 FROM ${POSTGRES_IMAGE} AS pg-client
 
 # -----------------------------------------------------------------------------
-# Stage 4: Final Runtime Image (Ubuntu 22.04)
+# Stage 4: Final Runtime Image (Debian Bookworm)
 # -----------------------------------------------------------------------------
-FROM ${UBUNTU_IMAGE}
+FROM ${DEBIAN_IMAGE}
 
 LABEL maintainer="qi758771475-gif"
-LABEL description="Sub2API - AI API Gateway Platform (Ubuntu 24.04)"
+LABEL description="Sub2API - AI API Gateway Platform (Debian Bookworm)"
 LABEL org.opencontainers.image.source="https://github.com/qi758771475-gif/sub2api-main"
 
 ENV DEBIAN_FRONTEND=noninteractive
