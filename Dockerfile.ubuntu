@@ -87,7 +87,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     liblz4-1 \
     krb5-libs \
     libldap-2.5-0 \
-    libedit0 \
+    libedit2 \
     wget \
     su-exec \
     && rm -rf /var/lib/apt/lists/* \
