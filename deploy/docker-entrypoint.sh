@@ -10,7 +10,13 @@ if [ "$(id -u)" = "0" ]; then
     chown -R sub2api:sub2api /app/data 2>/dev/null || true
     # Re-invoke this script as sub2api so the flag-detection below
     # also runs under the correct user.
-    exec gosu sub2api "$0" "$@"
+    if command -v gosu >/dev/null 2>&1; then
+        exec gosu sub2api "$0" "$@"
+    elif command -v su-exec >/dev/null 2>&1; then
+        exec su-exec sub2api "$0" "$@"
+    else
+        exec "$0" "$@"
+    fi
 fi
 
 # Compatibility: if the first arg looks like a flag (e.g. --help),
