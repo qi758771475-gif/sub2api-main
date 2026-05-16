@@ -329,6 +329,7 @@ import { useAuthStore, useAppStore } from '@/stores'
 import {
   getPublicSettings,
   isWeChatWebOAuthEnabled,
+  sendVerifyCode,
   validatePromoCode,
   validateInvitationCode
 } from '@/api/auth'
@@ -778,8 +779,14 @@ async function handleRegister(): Promise<void> {
       formData.aff_code = affCode
     }
 
-    // If email verification is enabled, redirect to verification page
+    // If email verification is enabled, send verification code first then redirect
     if (emailVerifyEnabled.value) {
+      // Pre-validate by sending verify code (checks email existence, etc.)
+      await sendVerifyCode({
+        email: formData.email,
+        turnstile_token: turnstileToken.value || undefined
+      })
+
       // Store registration data in sessionStorage
       sessionStorage.setItem(
         'register_data',
