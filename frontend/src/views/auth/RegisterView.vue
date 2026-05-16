@@ -711,15 +711,6 @@ function validateForm(): boolean {
     }
   }
 
-  // Affiliate force-bind validation: when enabled and aff_code came from URL, it must be present
-  if (affiliateLinkForceBind.value && !formData.aff_code.trim()) {
-    const stored = loadAffiliateReferralCode()
-    if (!stored) {
-      errorMessage.value = t('auth.affCodeRequired')
-      isValid = false
-    }
-  }
-
   // Turnstile validation
   if (turnstileEnabled.value && !turnstileToken.value) {
     errors.turnstile = t('auth.completeVerification')
@@ -782,13 +773,6 @@ async function handleRegister(): Promise<void> {
 
   try {
     const affCode = formData.aff_code.trim() || loadAffiliateReferralCode()
-
-    // Force-bind: block if no affiliate code available
-    if (affiliateLinkForceBind.value && !affCode) {
-      errorMessage.value = t('auth.affCodeRequired')
-      isLoading.value = false
-      return
-    }
 
     if (affCode) {
       formData.aff_code = affCode
