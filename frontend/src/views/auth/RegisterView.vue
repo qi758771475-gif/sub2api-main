@@ -55,6 +55,21 @@
         </div>
       </div>
 
+      <!-- Error Message -->
+      <div
+        v-if="errorMessage"
+        class="rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-800/50 dark:bg-red-900/20"
+      >
+        <div class="flex items-start gap-3">
+          <div class="flex-shrink-0">
+            <Icon name="exclamationCircle" size="md" class="text-red-500" />
+          </div>
+          <p class="text-sm text-red-700 dark:text-red-400">
+            {{ errorMessage }}
+          </p>
+        </div>
+      </div>
+
       <!-- Registration Form -->
       <form v-else @submit.prevent="handleRegister" class="space-y-5">
         <!-- Email Input -->
