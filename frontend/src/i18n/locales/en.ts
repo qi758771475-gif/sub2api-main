@@ -182,8 +182,8 @@ export default {
 
   // Setup Wizard
   setup: {
-    title: 'Sub2API Setup',
-    description: 'Configure your Sub2API instance',
+    title: 'OneApi Setup',
+    description: 'Configure your OneApi instance',
     database: {
       title: 'Database Configuration',
       description: 'Connect to your PostgreSQL database',
@@ -375,6 +375,7 @@ export default {
     buySubscription: 'Recharge / Subscription',
     purchaseShop: 'Recharge',
     docs: 'Docs',
+    docsGuide: 'Configuration Guide',
     myOrders: 'My Orders',
     orderManagement: 'Orders',
     paymentDashboard: 'Payment Dashboard',
@@ -4965,7 +4966,7 @@ export default {
         secretKeyConfiguredHint: 'Secret key configured. Leave empty to keep the current value.'      },
       linuxdo: {
         title: 'LinuxDo Connect Login',
-        description: 'Configure LinuxDo Connect OAuth for Sub2API end-user login',
+        description: 'Configure LinuxDo Connect OAuth for OneApi end-user login',
         enable: 'Enable LinuxDo Login',
         enableHint: 'Show LinuxDo login on the login/register pages',
         clientId: 'Client ID',
@@ -5126,7 +5127,7 @@ export default {
         backendModeDescription:
           'Disables user registration, public site, and self-service features. Only admin can log in and manage the platform.',
         siteName: 'Site Name',
-        siteNamePlaceholder: 'Sub2API',
+        siteNamePlaceholder: 'OneApi',
         siteNameHint: 'Displayed in emails and page titles',
         siteSubtitle: 'Site Subtitle',
         siteSubtitlePlaceholder: 'Subscription to API Conversion Platform',
@@ -5399,7 +5400,7 @@ export default {
         fromEmail: 'From Email',
         fromEmailPlaceholder: "noreply{'@'}example.com",
         fromName: 'From Name',
-        fromNamePlaceholder: 'Sub2API',
+        fromNamePlaceholder: 'OneApi',
         useTls: 'Use TLS',
         useTlsHint: 'Enable TLS encryption for SMTP connection'
       },
@@ -6012,14 +6013,14 @@ export default {
     // Admin tour steps
     admin: {
       welcome: {
-        title: '👋 Welcome to Sub2API',
-        description: '<div style="line-height: 1.8;"><p style="margin-bottom: 16px;">Sub2API is a powerful AI service gateway platform that helps you easily manage and distribute AI services.</p><p style="margin-bottom: 12px;"><b>🎯 Core Features:</b></p><ul style="margin-left: 20px; margin-bottom: 16px;"><li>📦 <b>Group Management</b> - Create service tiers (VIP, Free Trial, etc.)</li><li>🔗 <b>Account Pool</b> - Connect multiple upstream AI service accounts</li><li>🔑 <b>Key Distribution</b> - Generate independent API Keys for users</li><li>💰 <b>Billing Control</b> - Flexible rate and quota management</li></ul><p style="color: #10b981; font-weight: 600;">Let\'s complete the initial setup in 3 minutes →</p></div>',
+        title: '👋 Welcome to OneApi',
+        description: '<div style="line-height: 1.8;"><p style="margin-bottom: 16px;">OneApi is a powerful AI service gateway platform that helps you easily manage and distribute AI services.</p><p style="margin-bottom: 12px;"><b>🎯 Core Features:</b></p><ul style="margin-left: 20px; margin-bottom: 16px;"><li>📦 <b>Group Management</b> - Create service tiers (VIP, Free Trial, etc.)</li><li>🔗 <b>Account Pool</b> - Connect multiple upstream AI service accounts</li><li>🔑 <b>Key Distribution</b> - Generate independent API Keys for users</li><li>💰 <b>Billing Control</b> - Flexible rate and quota management</li></ul><p style="color: #10b981; font-weight: 600;">Let\'s complete the initial setup in 3 minutes →</p></div>',
         nextBtn: 'Start Setup 🚀',
         prevBtn: 'Skip'
       },
       groupManage: {
         title: '📦 Step 1: Group Management',
-        description: '<div style="line-height: 1.7;"><p style="margin-bottom: 12px;"><b>What is a Group?</b></p><p style="margin-bottom: 12px;">Groups are the core concept of Sub2API, like a "service package":</p><ul style="margin-left: 20px; margin-bottom: 12px; font-size: 13px;"><li>🎯 Each group can contain multiple upstream accounts</li><li>💰 Each group has independent billing multiplier</li><li>👥 Can be set as public or exclusive</li></ul><p style="margin-top: 12px; padding: 8px 12px; background: #f0fdf4; border-left: 3px solid #10b981; border-radius: 4px; font-size: 13px;"><b>💡 Example:</b> You can create "VIP Premium" (high rate) and "Free Trial" (low rate) groups</p><p style="margin-top: 16px; color: #10b981; font-weight: 600;">👉 Click "Group Management" on the left sidebar</p></div>'
+        description: '<div style="line-height: 1.7;"><p style="margin-bottom: 12px;"><b>What is a Group?</b></p><p style="margin-bottom: 12px;">Groups are the core concept of OneApi, like a "service package":</p><ul style="margin-left: 20px; margin-bottom: 12px; font-size: 13px;"><li>🎯 Each group can contain multiple upstream accounts</li><li>💰 Each group has independent billing multiplier</li><li>👥 Can be set as public or exclusive</li></ul><p style="margin-top: 12px; padding: 8px 12px; background: #f0fdf4; border-left: 3px solid #10b981; border-radius: 4px; font-size: 13px;"><b>💡 Example:</b> You can create "VIP Premium" (high rate) and "Free Trial" (low rate) groups</p><p style="margin-top: 16px; color: #10b981; font-weight: 600;">👉 Click "Group Management" on the left sidebar</p></div>'
       },
       createGroup: {
         title: '➕ Create New Group',
@@ -6112,8 +6113,8 @@ export default {
     // User tour steps
     user: {
       welcome: {
-        title: '👋 Welcome to Sub2API',
-        description: '<div style="line-height: 1.8;"><p style="margin-bottom: 16px;">Hello! Welcome to the Sub2API AI service platform.</p><p style="margin-bottom: 12px;"><b>🎯 Quick Start:</b></p><ul style="margin-left: 20px; margin-bottom: 16px;"><li>🔑 Create API Key</li><li>📋 Copy key to your application</li><li>🚀 Start using AI services</li></ul><p style="color: #10b981; font-weight: 600;">Just 1 minute, let\'s get started →</p></div>',
+        title: '👋 Welcome to OneApi',
+        description: '<div style="line-height: 1.8;"><p style="margin-bottom: 16px;">Hello! Welcome to the OneApi AI service platform.</p><p style="margin-bottom: 12px;"><b>🎯 Quick Start:</b></p><ul style="margin-left: 20px; margin-bottom: 16px;"><li>🔑 Create API Key</li><li>📋 Copy key to your application</li><li>🚀 Start using AI services</li></ul><p style="color: #10b981; font-weight: 600;">Just 1 minute, let\'s get started →</p></div>',
         nextBtn: 'Start 🚀',
         prevBtn: 'Skip'
       },
@@ -6451,6 +6452,108 @@ export default {
         active: 'Active',
         expired: 'Expired',
         revoked: 'Revoked',
+      },
+    },
+  },
+
+  docsGuide: {
+    title: 'Configuration Guide',
+    subtitle: 'Configure your favorite AI tools to use OneApi',
+    overview: 'Overview',
+    overviewText: 'OneApi provides an OpenAI-compatible API endpoint. Any tool that supports custom API base URLs can use OneApi by pointing to your server address.',
+    quickStart: 'Quick Start',
+    step1: 'Step 1',
+    step1Text: 'Log in or register an account.',
+    step1Login: 'Login',
+    step1Register: 'Register',
+    step2: 'Step 2',
+    step2Text: 'Go to the API Keys page and create a key.',
+    step2Link: 'Go to API Keys →',
+    step3: 'Step 3',
+    step3Text: 'Copy the base URL and API Key below, then configure your tool.',
+    apiBaseUrl: 'API Base URL',
+    apiKey: 'API Key',
+    noAccount: 'Don\'t have an account yet?',
+    registerNow: 'Register now',
+    serverAddress: 'Your server address (e.g. https://api.example.com)',
+    copy: 'Copy',
+    copied: 'Copied!',
+    tools: {
+      ccSwitch: {
+        name: 'CC Switch',
+        desc: 'Desktop tool for managing and switching between multiple AI API configurations. Supports one-click import from OneApi platform.',
+        download: 'Download',
+        downloadUrl: 'https://github.com/farion1231/cc-switch/releases',
+        setup: 'Import your API key directly from the Keys page by clicking the "Import to CCS" button, or manually set up the environment:',
+        manualSetup: 'Manual setup via CC Switch provider config:',
+        note: 'CC Switch manages per-project API configurations. After importing, select your provider in CC Switch and start using your AI tools.',
+      },
+      claudeCode: {
+        name: 'Claude Code',
+        desc: 'Anthropic\'s official CLI agent for coding. Supports custom API providers via environment variables.',
+        setup: 'Set environment variables in your terminal profile (~/.bashrc, ~/.zshrc) or create a .env file in your project:',
+        note: 'After setting, restart your terminal or run source ~/.zshrc (or ~/.bashrc). Verify with claude --version.',
+      },
+      opencode: {
+        name: 'OpenCode',
+        desc: 'Open-source AI coding agent. OpenAI-compatible, works out of the box with OneApi.',
+        setup: 'Create an opencode.json in your project root or ~/.config/opencode/opencode.json:',
+        note: 'Use the model names listed on your platform\'s Available Channels page.',
+      },
+      codex: {
+        name: 'Codex',
+        desc: 'OpenAI\'s CLI coding agent. Use OneApi as a drop-in replacement for the OpenAI API.',
+        setup: 'Set environment variables or use codex config commands:',
+        note: 'Codex uses the Responses API. Make sure your account supports /v1/responses endpoint.',
+      },
+      cursor: {
+        name: 'Cursor IDE',
+        desc: 'Popular AI-powered code editor. Configure OneApi as a custom OpenAI provider.',
+        setup: 'Open Cursor Settings → Models → OpenAI API Key, then:',
+        step1: 'Set "OpenAI Base URL" to https://oneapi.cam/v1',
+        step2: 'Enter sk-your-api-key-here as the "OpenAI API Key"',
+        step3: 'Add model names (e.g. gpt-4o, claude-sonnet-4-5, gemini-2.5-pro)',
+        note: 'Replace sk-your-api-key-here with the API Key from your Keys page.',
+      },
+      continue: {
+        name: 'Continue.dev',
+        desc: 'Open-source AI code assistant for VS Code and JetBrains. Supports OpenAI-compatible providers.',
+        setup: 'Edit ~/.continue/config.json and add OneApi as a provider:',
+        note: 'Restart VS Code/IDE after saving the config. Select your model from the Continue sidebar.',
+      },
+      aider: {
+        name: 'Aider',
+        desc: 'AI pair programming in your terminal. Supports OpenAI-compatible APIs.',
+        setup: 'Set environment variables before running aider:',
+        note: 'Aider requires the chat completions endpoint. Use a compatible model name from your Available Channels.',
+      },
+      terminal: {
+        name: 'Terminal / curl',
+        desc: 'Test your API connection directly with curl commands.',
+        chatCompletions: 'Chat Completions',
+        responses: 'Responses API',
+        note: 'Replace sk-your-api-key-here with the API Key from your Keys page.',
+      },
+      python: {
+        name: 'Python SDK',
+        desc: 'Use the official openai Python package with OneApi as a drop-in replacement.',
+        setup: 'Install the openai package and configure it:',
+        note: 'All OpenAI SDK features work, including streaming. Set base_url and api_key to your OneApi values.',
+      },
+    },
+    platformSpecific: {
+      title: 'Platform-Specific Notes',
+      windows: {
+        title: 'Windows',
+        desc: 'On Windows, use setx in Command Prompt or $env: in PowerShell for environment variables. For permanent setup, add variables via System Properties → Environment Variables.',
+      },
+      macos: {
+        title: 'macOS',
+        desc: 'Add export statements to ~/.zshrc (or ~/.bash_profile for older macOS). Use launchctl setenv for GUI apps.',
+      },
+      linux: {
+        title: 'Linux',
+        desc: 'Add export statements to ~/.bashrc or ~/.zshrc. For systemd services, use Environment= in the service file.',
       },
     },
   },

@@ -182,8 +182,8 @@ export default {
 
   // Setup Wizard
   setup: {
-    title: 'Sub2API 安装向导',
-    description: '配置您的 Sub2API 实例',
+    title: 'OneApi 安装向导',
+    description: '配置您的 OneApi 实例',
     database: {
       title: '数据库配置',
       description: '连接到您的 PostgreSQL 数据库',
@@ -375,6 +375,7 @@ export default {
     buySubscription: '充值/订阅',
     purchaseShop: '充值',
     docs: '文档',
+    docsGuide: '配置教程',
     myOrders: '我的订单',
     orderManagement: '订单管理',
     paymentDashboard: '支付概览',
@@ -5129,7 +5130,7 @@ export default {
       },
       linuxdo: {
         title: 'LinuxDo Connect 登录',
-        description: '配置 LinuxDo Connect OAuth，用于 Sub2API 用户登录',
+        description: '配置 LinuxDo Connect OAuth，用于 OneApi 用户登录',
         enable: '启用 LinuxDo 登录',
         enableHint: '在登录/注册页面显示 LinuxDo 登录入口',
         clientId: 'Client ID',
@@ -5286,7 +5287,7 @@ export default {
           '禁用用户注册、公开页面和自助服务功能。仅管理员可以登录和管理平台。',
         siteName: '站点名称',
         siteNameHint: '显示在邮件和页面标题中',
-        siteNamePlaceholder: 'Sub2API',
+        siteNamePlaceholder: 'OneApi',
         siteSubtitle: '站点副标题',
         siteSubtitleHint: '显示在登录和注册页面',
         siteSubtitlePlaceholder: '订阅转 API 转换平台',
@@ -5560,7 +5561,7 @@ export default {
         fromEmail: '发件人邮箱',
         fromEmailPlaceholder: "noreply{'@'}example.com",
         fromName: '发件人名称',
-        fromNamePlaceholder: 'Sub2API',
+        fromNamePlaceholder: 'OneApi',
         useTls: '使用 TLS',
         useTlsHint: '为 SMTP 连接启用 TLS 加密'
       },
@@ -6170,16 +6171,16 @@ export default {
     // Admin tour steps
     admin: {
       welcome: {
-        title: '👋 欢迎使用 Sub2API',
+        title: '👋 欢迎使用 OneApi',
         description:
-          '<div style="line-height: 1.8;"><p style="margin-bottom: 16px;">Sub2API 是一个强大的 AI 服务中转平台，让您轻松管理和分发 AI 服务。</p><p style="margin-bottom: 12px;"><b>🎯 核心功能：</b></p><ul style="margin-left: 20px; margin-bottom: 16px;"><li>📦 <b>分组管理</b> - 创建不同的服务套餐（VIP、免费试用等）</li><li>🔗 <b>账号池</b> - 连接多个上游 AI 服务商账号</li><li>🔑 <b>密钥分发</b> - 为用户生成独立的 API Key</li><li>💰 <b>计费管理</b> - 灵活的费率和配额控制</li></ul><p style="color: #10b981; font-weight: 600;">接下来，我们将用 3 分钟带您完成首次配置 →</p></div>',
+          '<div style="line-height: 1.8;"><p style="margin-bottom: 16px;">OneApi 是一个强大的 AI 服务中转平台，让您轻松管理和分发 AI 服务。</p><p style="margin-bottom: 12px;"><b>🎯 核心功能：</b></p><ul style="margin-left: 20px; margin-bottom: 16px;"><li>📦 <b>分组管理</b> - 创建不同的服务套餐（VIP、免费试用等）</li><li>🔗 <b>账号池</b> - 连接多个上游 AI 服务商账号</li><li>🔑 <b>密钥分发</b> - 为用户生成独立的 API Key</li><li>💰 <b>计费管理</b> - 灵活的费率和配额控制</li></ul><p style="color: #10b981; font-weight: 600;">接下来，我们将用 3 分钟带您完成首次配置 →</p></div>',
         nextBtn: '开始配置 🚀',
         prevBtn: '跳过'
       },
       groupManage: {
         title: '📦 第一步：分组管理',
         description:
-          '<div style="line-height: 1.7;"><p style="margin-bottom: 12px;"><b>什么是分组？</b></p><p style="margin-bottom: 12px;">分组是 Sub2API 的核心概念，它就像一个"服务套餐"：</p><ul style="margin-left: 20px; margin-bottom: 12px; font-size: 13px;"><li>🎯 每个分组可以包含多个上游账号</li><li>💰 每个分组有独立的计费倍率</li><li>👥 可以设置为公开或专属分组</li></ul><p style="margin-top: 12px; padding: 8px 12px; background: #f0fdf4; border-left: 3px solid #10b981; border-radius: 4px; font-size: 13px;"><b>💡 示例：</b>您可以创建"VIP专线"（高倍率）和"免费试用"（低倍率）两个分组</p><p style="margin-top: 16px; color: #10b981; font-weight: 600;">👉 点击左侧的"分组管理"开始</p></div>'
+          '<div style="line-height: 1.7;"><p style="margin-bottom: 12px;"><b>什么是分组？</b></p><p style="margin-bottom: 12px;">分组是 OneApi 的核心概念，它就像一个"服务套餐"：</p><ul style="margin-left: 20px; margin-bottom: 12px; font-size: 13px;"><li>🎯 每个分组可以包含多个上游账号</li><li>💰 每个分组有独立的计费倍率</li><li>👥 可以设置为公开或专属分组</li></ul><p style="margin-top: 12px; padding: 8px 12px; background: #f0fdf4; border-left: 3px solid #10b981; border-radius: 4px; font-size: 13px;"><b>💡 示例：</b>您可以创建"VIP专线"（高倍率）和"免费试用"（低倍率）两个分组</p><p style="margin-top: 16px; color: #10b981; font-weight: 600;">👉 点击左侧的"分组管理"开始</p></div>'
       },
       createGroup: {
         title: '➕ 创建新分组',
@@ -6291,9 +6292,9 @@ export default {
     // User tour steps
     user: {
       welcome: {
-        title: '👋 欢迎使用 Sub2API',
+        title: '👋 欢迎使用 OneApi',
         description:
-          '<div style="line-height: 1.8;"><p style="margin-bottom: 16px;">您好！欢迎来到 Sub2API AI 服务平台。</p><p style="margin-bottom: 12px;"><b>🎯 快速开始：</b></p><ul style="margin-left: 20px; margin-bottom: 16px;"><li>🔑 创建 API 密钥</li><li>📋 复制密钥到您的应用</li><li>🚀 开始使用 AI 服务</li></ul><p style="color: #10b981; font-weight: 600;">只需 1 分钟，让我们开始吧 →</p></div>',
+          '<div style="line-height: 1.8;"><p style="margin-bottom: 16px;">您好！欢迎来到 OneApi AI 服务平台。</p><p style="margin-bottom: 12px;"><b>🎯 快速开始：</b></p><ul style="margin-left: 20px; margin-bottom: 16px;"><li>🔑 创建 API 密钥</li><li>📋 复制密钥到您的应用</li><li>🚀 开始使用 AI 服务</li></ul><p style="color: #10b981; font-weight: 600;">只需 1 分钟，让我们开始吧 →</p></div>',
         nextBtn: '开始 🚀',
         prevBtn: '跳过'
       },
@@ -6635,6 +6636,108 @@ export default {
         active: '生效中',
         expired: '已过期',
         revoked: '已撤销',
+      },
+    },
+  },
+
+  docsGuide: {
+    title: '配置教程',
+    subtitle: '将你常用的 AI 工具配置为使用 OneApi',
+    overview: '概述',
+    overviewText: 'OneApi 提供与 OpenAI 兼容的 API 端点。任何支持自定义 API 地址的工具都可以通过指向你的服务器地址来接入 OneApi。',
+    quickStart: '快速开始',
+    step1: '第一步',
+    step1Text: '登录或注册一个账号。',
+    step1Login: '登录',
+    step1Register: '注册',
+    step2: '第二步',
+    step2Text: '前往 API 密钥页面创建一个密钥。',
+    step2Link: '前往 API 密钥页面 →',
+    step3: '第三步',
+    step3Text: '复制下方的 API 地址和密钥，配置到你的工具中即可使用。',
+    apiBaseUrl: 'API 地址',
+    apiKey: 'API 密钥',
+    noAccount: '还没有账号？',
+    registerNow: '立即注册',
+    serverAddress: '你的服务器地址（例如 https://api.example.com）',
+    copy: '复制',
+    copied: '已复制！',
+    tools: {
+      ccSwitch: {
+        name: 'CC Switch',
+        desc: '桌面端 AI API 配置管理切换工具，支持从 OneApi 平台一键导入配置。',
+        download: '下载地址',
+        downloadUrl: 'https://github.com/farion1231/cc-switch/releases',
+        setup: '在 API 密钥页面点击"导入到 CCS"按钮即可一键导入，或手动配置环境变量：',
+        manualSetup: '手动配置 CC Switch provider：',
+        note: 'CC Switch 可按项目管理 API 配置。导入后在 CC Switch 中选择对应 provider 即可使用各类 AI 工具。',
+      },
+      claudeCode: {
+        name: 'Claude Code',
+        desc: 'Anthropic 官方命令行 AI 编码助手。支持通过环境变量配置自定义 API 提供商。',
+        setup: '在终端配置文件中设置环境变量（~/.bashrc、~/.zshrc），或在项目目录创建 .env 文件：',
+        note: '设置完成后重启终端或执行 source ~/.zshrc（或 ~/.bashrc）。使用 claude --version 验证配置。',
+      },
+      opencode: {
+        name: 'OpenCode',
+        desc: '开源 AI 编码助手，兼容 OpenAI 接口，可直接接入 OneApi。',
+        setup: '在项目根目录或 ~/.config/opencode/opencode.json 中创建配置文件：',
+        note: '模型名称请查看平台的「可用渠道」页面。',
+      },
+      codex: {
+        name: 'Codex',
+        desc: 'OpenAI 官方命令行编码助手。OneApi 可作为 OpenAI API 的直接替代。',
+        setup: '通过环境变量或 codex config 命令配置：',
+        note: 'Codex 使用 Responses API。请确保你的账号支持 /v1/responses 端点。',
+      },
+      cursor: {
+        name: 'Cursor IDE',
+        desc: '流行的 AI 代码编辑器。将 OneApi 配置为自定义 OpenAI 提供商即可使用。',
+        setup: '打开 Cursor 设置 → Models → OpenAI API Key，然后：',
+        step1: '将"OpenAI Base URL"设置为 https://oneapi.cam/v1',
+        step2: '输入 sk-your-api-key-here 作为"OpenAI API Key"',
+        step3: '添加模型名称（如 gpt-4o、claude-sonnet-4-5、gemini-2.5-pro）',
+        note: '将 sk-your-api-key-here 替换为你在 API 密钥页面创建的 Key。',
+      },
+      continue: {
+        name: 'Continue.dev',
+        desc: '面向 VS Code 和 JetBrains 的开源 AI 代码助手。支持 OpenAI 兼容的提供商。',
+        setup: '编辑 ~/.continue/config.json，添加 OneApi 作为 provider：',
+        note: '保存配置后重启 VS Code/IDE。在 Continue 侧边栏中选择你的模型。',
+      },
+      aider: {
+        name: 'Aider',
+        desc: '终端中的 AI 结对编程工具。支持 OpenAI 兼容的 API。',
+        setup: '运行 aider 前设置环境变量：',
+        note: 'Aider 使用 Chat Completions 端点。请使用「可用渠道」中兼容的模型名称。',
+      },
+      terminal: {
+        name: '终端 / curl',
+        desc: '直接用 curl 命令测试你的 API 连接。',
+        chatCompletions: 'Chat Completions',
+        responses: 'Responses API',
+        note: '将 sk-your-api-key-here 替换为你在 API 密钥页面创建的 Key。',
+      },
+      python: {
+        name: 'Python SDK',
+        desc: '使用官方 openai Python 包，OneApi 可直接替代 OpenAI。',
+        setup: '安装 openai 包并配置：',
+        note: '所有 OpenAI SDK 功能均可使用，包括流式输出。将 base_url 和 api_key 设置为你的 OneApi 值。',
+      },
+    },
+    platformSpecific: {
+      title: '各平台注意事项',
+      windows: {
+        title: 'Windows',
+        desc: '在 Windows 上，使用 setx（命令提示符）或 $env:（PowerShell）设置环境变量。永久配置请通过"系统属性 → 环境变量"添加。',
+      },
+      macos: {
+        title: 'macOS',
+        desc: '在 ~/.zshrc（或旧版 macOS 的 ~/.bash_profile）中添加 export 语句。GUI 应用使用 launchctl setenv。',
+      },
+      linux: {
+        title: 'Linux',
+        desc: '在 ~/.bashrc 或 ~/.zshrc 中添加 export 语句。systemd 服务在 service 文件中使用 Environment=。',
       },
     },
   },
