@@ -353,6 +353,13 @@ const (
 	SettingKeyAccountQuotaNotifyEnabled = "account_quota_notify_enabled" // 全局开关
 	SettingKeyAccountQuotaNotifyEmails  = "account_quota_notify_emails"  // 管理员通知邮箱列表（JSON 数组）
 
+	// Feishu webhook notification
+	SettingKeyFeishuNotifyEnabled         = "feishu_notify_enabled"
+	SettingKeyFeishuNotifyWebhookURL      = "feishu_notify_webhook_url"
+	SettingKeyFeishuNotifyRechargeEnabled = "feishu_notify_recharge_enabled"
+	SettingKeyFeishuNotifyRedeemEnabled   = "feishu_notify_redeem_enabled"
+	SettingKeyFeishuNotifyFields          = "feishu_notify_fields"
+
 	// Web Search Emulation
 	SettingKeyWebSearchEmulationConfig = "web_search_emulation_config" // JSON 配置
 )
