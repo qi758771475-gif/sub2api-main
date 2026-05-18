@@ -18,6 +18,7 @@ type FeishuNotifyService struct {
 	ch          chan model.RechargeEvent
 	httpClient  *http.Client
 	settingRepo SettingRepository
+	shutdown    chan struct{}
 
 	mu              sync.RWMutex
 	enabled         bool
@@ -25,6 +26,7 @@ type FeishuNotifyService struct {
 	rechargeEnabled bool
 	redeemEnabled   bool
 	visibleFields   []string
+	configExpiresAt time.Time
 }
 
 // NewFeishuNotifyService creates the service and starts the background worker.
@@ -33,6 +35,7 @@ func NewFeishuNotifyService(settingRepo SettingRepository) *FeishuNotifyService 
 		ch:          make(chan model.RechargeEvent, 64),
 		httpClient:  &http.Client{Timeout: 5 * time.Second},
 		settingRepo: settingRepo,
+		shutdown:    make(chan struct{}),
 	}
 	s.reloadConfig(context.Background())
 	go s.worker()
@@ -48,30 +51,73 @@ func (s *FeishuNotifyService) Send(event model.RechargeEvent) {
 	}
 }
 
+// Shutdown gracefully stops the worker, draining any remaining events before returning.
+func (s *FeishuNotifyService) Shutdown() {
+	close(s.shutdown)
+}
+
 func (s *FeishuNotifyService) worker() {
-	for event := range s.ch {
-		ctx := context.Background()
-		s.reloadConfig(ctx)
-		if !s.enabled {
-			continue
-		}
-		if event.Method == "直冲" && !s.rechargeEnabled {
-			continue
-		}
-		if event.Method == "兑换" && !s.redeemEnabled {
-			continue
-		}
-		if s.webhookURL == "" {
-			continue
-		}
-		card := s.buildCard(event)
-		if err := s.httpPost(ctx, card); err != nil {
-			slog.Warn("feishu notify send failed", "error", err)
+	for {
+		select {
+		case <-s.shutdown:
+			// Drain remaining events before exiting.
+			for {
+				select {
+				case event, ok := <-s.ch:
+					if !ok {
+						return
+					}
+					s.processEvent(event)
+				default:
+					return
+				}
+			}
+		case event, ok := <-s.ch:
+			if !ok {
+				return
+			}
+			s.processEvent(event)
 		}
 	}
 }
 
+func (s *FeishuNotifyService) processEvent(event model.RechargeEvent) {
+	ctx := context.Background()
+	s.reloadConfig(ctx)
+
+	s.mu.RLock()
+	enabled := s.enabled
+	rechargeEnabled := s.rechargeEnabled
+	redeemEnabled := s.redeemEnabled
+	webhookURL := s.webhookURL
+	s.mu.RUnlock()
+
+	if !enabled {
+		return
+	}
+	if event.Method == "直冲" && !rechargeEnabled {
+		return
+	}
+	if event.Method == "兑换" && !redeemEnabled {
+		return
+	}
+	if webhookURL == "" {
+		return
+	}
+	card := s.buildCard(event)
+	if err := s.httpPost(ctx, card); err != nil {
+		slog.Warn("feishu notify send failed", "error", err)
+	}
+}
+
 func (s *FeishuNotifyService) reloadConfig(ctx context.Context) {
+	s.mu.RLock()
+	if time.Now().Before(s.configExpiresAt) {
+		s.mu.RUnlock()
+		return
+	}
+	s.mu.RUnlock()
+
 	keys := []string{
 		SettingKeyFeishuNotifyEnabled,
 		SettingKeyFeishuNotifyWebhookURL,
@@ -101,6 +147,7 @@ func (s *FeishuNotifyService) reloadConfig(ctx context.Context) {
 	if len(s.visibleFields) == 0 {
 		s.visibleFields = model.DefaultFeishuNotifyFields()
 	}
+	s.configExpiresAt = time.Now().Add(30 * time.Second)
 }
 
 func (s *FeishuNotifyService) buildCard(event model.RechargeEvent) map[string]any {
@@ -109,8 +156,12 @@ func (s *FeishuNotifyService) buildCard(event model.RechargeEvent) map[string]an
 		headerTitle = "兑换到账通知"
 	}
 
-	fieldSet := make(map[string]bool, len(s.visibleFields))
-	for _, f := range s.visibleFields {
+	s.mu.RLock()
+	visibleFields := s.visibleFields
+	s.mu.RUnlock()
+
+	fieldSet := make(map[string]bool, len(visibleFields))
+	for _, f := range visibleFields {
 		fieldSet[f] = true
 	}
 
@@ -158,7 +209,12 @@ func (s *FeishuNotifyService) httpPost(ctx context.Context, card map[string]any)
 	if err != nil {
 		return fmt.Errorf("marshal card: %w", err)
 	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, s.webhookURL, bytes.NewReader(body))
+
+	s.mu.RLock()
+	webhookURL := s.webhookURL
+	s.mu.RUnlock()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, webhookURL, bytes.NewReader(body))
 	if err != nil {
 		return fmt.Errorf("create request: %w", err)
 	}
@@ -177,7 +233,10 @@ func (s *FeishuNotifyService) httpPost(ctx context.Context, card map[string]any)
 // SendTestCard sends a sample notification card directly (bypasses channel/worker).
 func (s *FeishuNotifyService) SendTestCard(ctx context.Context) error {
 	s.reloadConfig(ctx)
-	if s.webhookURL == "" {
+	s.mu.RLock()
+	webhookURL := s.webhookURL
+	s.mu.RUnlock()
+	if webhookURL == "" {
 		return fmt.Errorf("webhook URL is not configured")
 	}
 	card := s.buildCard(model.RechargeEvent{
