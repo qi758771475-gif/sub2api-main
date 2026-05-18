@@ -175,6 +175,13 @@ type SystemSettings struct {
 	// Account quota notification
 	AccountQuotaNotifyEnabled bool
 	AccountQuotaNotifyEmails  []NotifyEmailEntry
+
+	// Feishu webhook notification
+	FeishuNotifyEnabled         bool
+	FeishuNotifyWebhookURL      string
+	FeishuNotifyRechargeEnabled bool
+	FeishuNotifyRedeemEnabled   bool
+	FeishuNotifyFields          []string
 }
 
 type DefaultSubscriptionSetting struct {
