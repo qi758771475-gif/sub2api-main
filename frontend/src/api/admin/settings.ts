@@ -487,6 +487,13 @@ export interface SystemSettings {
   affiliate_enabled: boolean;
   affiliate_link_force_bind: boolean;
 
+  // Feishu webhook notification
+  feishu_notify_enabled: boolean;
+  feishu_notify_webhook_url: string;
+  feishu_notify_recharge_enabled: boolean;
+  feishu_notify_redeem_enabled: boolean;
+  feishu_notify_fields: string[];
+
   // 外部充值（购买订阅）iframe 嵌入
   purchase_subscription_enabled: boolean;
   purchase_subscription_url: string;
@@ -660,6 +667,13 @@ export interface UpdateSettingsRequest {
   affiliate_enabled?: boolean;
   affiliate_link_force_bind?: boolean;
 
+  // Feishu webhook notification
+  feishu_notify_enabled?: boolean;
+  feishu_notify_webhook_url?: string;
+  feishu_notify_recharge_enabled?: boolean;
+  feishu_notify_redeem_enabled?: boolean;
+  feishu_notify_fields?: string[];
+
   // 外部充值（购买订阅）iframe 嵌入
   purchase_subscription_enabled?: boolean;
   purchase_subscription_url?: string;
@@ -743,6 +757,17 @@ export async function sendTestEmail(
   const { data } = await apiClient.post<{ message: string }>(
     "/admin/settings/send-test-email",
     request,
+  );
+  return data;
+}
+
+/**
+ * Test Feishu webhook notification
+ * @returns Test result message
+ */
+export async function testFeishu(): Promise<{ message: string }> {
+  const { data } = await apiClient.post<{ message: string }>(
+    "/admin/settings/test-feishu",
   );
   return data;
 }
@@ -1053,6 +1078,7 @@ export const settingsAPI = {
   updateSettings,
   testSmtpConnection,
   sendTestEmail,
+  testFeishu,
   getAdminApiKey,
   regenerateAdminApiKey,
   deleteAdminApiKey,

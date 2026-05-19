@@ -5557,6 +5557,95 @@
         </div>
         <!-- /Tab: Email -->
 
+        <!-- Tab: Notification -->
+        <div v-show="activeTab === 'notification'" class="space-y-6">
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <h3>{{ t("admin.settings.notification.enabled") }}</h3>
+              <p class="settings-card-hint">{{ t("admin.settings.notification.enabledHint") }}</p>
+            </div>
+            <div class="settings-card-body">
+              <Toggle v-model="form.feishu_notify_enabled" />
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <h3>{{ t("admin.settings.notification.webhookUrl") }}</h3>
+            </div>
+            <div class="settings-card-body">
+              <div class="flex gap-2">
+                <input
+                  v-model="form.feishu_notify_webhook_url"
+                  type="url"
+                  class="form-input flex-1"
+                  :placeholder="t('admin.settings.notification.webhookUrlPlaceholder')"
+                />
+                <button
+                  class="btn btn-secondary"
+                  :disabled="testingFeishu || !form.feishu_notify_webhook_url"
+                  @click="testFeishuWebhook"
+                >
+                  <span v-if="testingFeishu">...</span>
+                  <span v-else>{{ t("admin.settings.notification.testSend") }}</span>
+                </button>
+              </div>
+              <p
+                v-if="feishuTestResult"
+                :class="feishuTestResult.success ? 'text-green-600' : 'text-red-600'"
+                class="text-sm mt-2"
+              >
+                {{ feishuTestResult.message }}
+              </p>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <h3>{{ t("admin.settings.notification.events") }}</h3>
+            </div>
+            <div class="settings-card-body space-y-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p>{{ t("admin.settings.notification.rechargeEnabled") }}</p>
+                  <p class="settings-card-hint">{{ t("admin.settings.notification.rechargeEnabledHint") }}</p>
+                </div>
+                <Toggle v-model="form.feishu_notify_recharge_enabled" />
+              </div>
+              <div class="flex items-center justify-between">
+                <div>
+                  <p>{{ t("admin.settings.notification.redeemEnabled") }}</p>
+                  <p class="settings-card-hint">{{ t("admin.settings.notification.redeemEnabledHint") }}</p>
+                </div>
+                <Toggle v-model="form.feishu_notify_redeem_enabled" />
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <h3>{{ t("admin.settings.notification.fields") }}</h3>
+            </div>
+            <div class="settings-card-body">
+              <div class="grid grid-cols-3 gap-3">
+                <label
+                  v-for="field in feishuFieldOptions"
+                  :key="field.key"
+                  class="flex items-center gap-2 cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    :checked="form.feishu_notify_fields.includes(field.key)"
+                    class="checkbox"
+                    @change="toggleFeishuField(field.key)"
+                  />
+                  <span class="text-sm">{{ localText(field.labelZh, field.labelEn) }}</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Tab: Backup -->
         <div v-show="activeTab === 'backup'">
           <BackupSettings />
@@ -5692,6 +5781,31 @@ function localText(zh: string, en: string): string {
   return locale.value.startsWith("zh") ? zh : en;
 }
 
+function toggleFeishuField(key: string) {
+  const idx = form.feishu_notify_fields.indexOf(key);
+  if (idx >= 0) {
+    form.feishu_notify_fields.splice(idx, 1);
+  } else {
+    form.feishu_notify_fields.push(key);
+  }
+}
+
+async function testFeishuWebhook() {
+  testingFeishu.value = true;
+  feishuTestResult.value = null;
+  try {
+    await adminAPI.settings.testFeishu();
+    feishuTestResult.value = { success: true, message: t("admin.settings.notification.testSendSuccess") };
+  } catch (e: unknown) {
+    feishuTestResult.value = {
+      success: false,
+      message: extractApiErrorMessage(e, t("admin.settings.notification.testSendFailed")),
+    };
+  } finally {
+    testingFeishu.value = false;
+  }
+}
+
 const paymentGuideHref = computed(() =>
   locale.value.startsWith("zh")
     ? "https://github.com/Wei-Shaw/sub2api/blob/main/docs/PAYMENT_CN.md"
@@ -5712,6 +5826,7 @@ type SettingsTab =
   | "gateway"
   | "payment"
   | "email"
+  | "notification"
   | "backup";
 const activeTab = ref<SettingsTab>("general");
 const settingsTabs = [
@@ -5722,6 +5837,7 @@ const settingsTabs = [
   { key: "gateway" as SettingsTab, icon: "server" as const },
   { key: "payment" as SettingsTab, icon: "creditCard" as const },
   { key: "email" as SettingsTab, icon: "mail" as const },
+  { key: "notification" as SettingsTab, icon: "bell" as const },
   { key: "backup" as SettingsTab, icon: "database" as const },
 ];
 const { copyToClipboard } = useClipboard();
@@ -5736,6 +5852,20 @@ const testEmailAddress = ref("");
 const registrationEmailSuffixWhitelistTags = ref<string[]>([]);
 const registrationEmailSuffixWhitelistDraft = ref("");
 const tablePageSizeOptionsInput = ref("10, 20, 50, 100");
+
+const testingFeishu = ref(false);
+const feishuTestResult = ref<{ success: boolean; message: string } | null>(null);
+const feishuFieldOptions = [
+  { key: "user_email", labelZh: "用户邮箱", labelEn: "User Email" },
+  { key: "user_name", labelZh: "用户名", labelEn: "User Name" },
+  { key: "user_id", labelZh: "用户ID", labelEn: "User ID" },
+  { key: "amount", labelZh: "支付金额", labelEn: "Payment Amount" },
+  { key: "credited_amount", labelZh: "实际到账", labelEn: "Credited Amount" },
+  { key: "method", labelZh: "充值方式", labelEn: "Recharge Method" },
+  { key: "method_detail", labelZh: "支付渠道", labelEn: "Payment Channel" },
+  { key: "order_no", labelZh: "订单号/兑换码", labelEn: "Order No." },
+  { key: "time", labelZh: "时间", labelEn: "Time" },
+];
 
 // Admin API Key 状态
 const adminApiKeyLoading = ref(true);
@@ -6008,6 +6138,11 @@ const form = reactive<SettingsForm>({
   // Affiliate (邀请返利) feature switch
   affiliate_enabled: false,
   affiliate_link_force_bind: false,
+  feishu_notify_enabled: false,
+  feishu_notify_webhook_url: "",
+  feishu_notify_recharge_enabled: true,
+  feishu_notify_redeem_enabled: true,
+  feishu_notify_fields: ["user_email", "user_name", "amount", "credited_amount", "method", "method_detail", "order_no", "time"],
 });
 
 const authSourceDefaults = reactive<AuthSourceDefaultsState>(
@@ -6954,6 +7089,11 @@ async function saveSettings() {
       // Affiliate (邀请返利) feature switch
       affiliate_enabled: form.affiliate_enabled,
       affiliate_link_force_bind: form.affiliate_link_force_bind,
+      feishu_notify_enabled: form.feishu_notify_enabled,
+      feishu_notify_webhook_url: form.feishu_notify_webhook_url,
+      feishu_notify_recharge_enabled: form.feishu_notify_recharge_enabled,
+      feishu_notify_redeem_enabled: form.feishu_notify_redeem_enabled,
+      feishu_notify_fields: form.feishu_notify_fields,
     };
 
     // 仅当 openai_fast_policy_settings 已成功从后端加载时才回写，
