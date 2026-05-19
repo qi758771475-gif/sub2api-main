@@ -6621,6 +6621,7 @@ type SettingsTab =
   | "gateway"
   | "payment"
   | "email"
+  | "notification"
   | "backup";
 const activeTab = ref<SettingsTab>("general");
 const settingsTabs = [

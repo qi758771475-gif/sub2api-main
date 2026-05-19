@@ -551,6 +551,13 @@ export interface SystemSettings {
   // Affiliate (邀请返利) feature switch
   affiliate_enabled: boolean;
 
+  // Feishu webhook notification
+  feishu_notify_enabled: boolean;
+  feishu_notify_webhook_url: string;
+  feishu_notify_recharge_enabled: boolean;
+  feishu_notify_redeem_enabled: boolean;
+  feishu_notify_fields: string[];
+
   // OpenAI fast/flex policy
   openai_fast_policy_settings?: OpenAIFastPolicySettings;
 }
@@ -766,6 +773,13 @@ export interface UpdateSettingsRequest {
 
   // Affiliate (邀请返利) feature switch
   affiliate_enabled?: boolean;
+
+  // Feishu webhook notification
+  feishu_notify_enabled?: boolean;
+  feishu_notify_webhook_url?: string;
+  feishu_notify_recharge_enabled?: boolean;
+  feishu_notify_redeem_enabled?: boolean;
+  feishu_notify_fields?: string[];
 
   // OpenAI fast/flex policy
   openai_fast_policy_settings?: OpenAIFastPolicySettings;
