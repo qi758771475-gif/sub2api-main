@@ -3334,6 +3334,7 @@ func (h *SettingHandler) ensureUserAttributeDefinition(ctx context.Context, key,
 	}
 	slog.Info("dingtalk: created user attribute definition", "key", key, "name", name, "type", attrType)
 }
+
 // testFeishuRequest is the request body for the test-feishu endpoint.
 type testFeishuRequest struct {
 	WebhookURL string `json:"webhook_url"`

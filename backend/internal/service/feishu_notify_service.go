@@ -218,7 +218,7 @@ func (s *FeishuNotifyService) httpPost(ctx context.Context, url string, card map
 	if err != nil {
 		return fmt.Errorf("post webhook: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode >= 300 {
 		return fmt.Errorf("webhook returned status %d", resp.StatusCode)
 	}
