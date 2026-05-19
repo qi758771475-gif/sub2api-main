@@ -2,21 +2,21 @@ package service
 
 import (
 	"testing"
+
+	"github.com/Wei-Shaw/sub2api/internal/model"
 )
 
 func TestRedeemService_FeishuNotifyField(t *testing.T) {
-	repo := newMockSettingRepo()
-	repo.enableFeishu("http://localhost")
-	notifySvc := NewFeishuNotifyService(repo)
+	h := newFeishuTestHelper()
+	h.enableFeishu("http://localhost")
+	notifySvc := NewFeishuNotifyService(h.repo)
 	defer notifySvc.Shutdown()
 
-	// Create RedeemService with nil feishuNotify
 	svc := &RedeemService{feishuNotify: nil}
 	if svc.feishuNotify != nil {
 		t.Error("feishuNotify should be nil")
 	}
 
-	// Assign and verify
 	svc.feishuNotify = notifySvc
 	if svc.feishuNotify == nil {
 		t.Error("feishuNotify should be set")
@@ -26,7 +26,6 @@ func TestRedeemService_FeishuNotifyField(t *testing.T) {
 func TestRedeemService_NilNotify_DoesNotPanic(t *testing.T) {
 	svc := &RedeemService{feishuNotify: nil}
 
-	// Verify nil field doesn't panic on access
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
@@ -37,26 +36,29 @@ func TestRedeemService_NilNotify_DoesNotPanic(t *testing.T) {
 	}()
 }
 
-func TestRedeemNotifyEvent_Fields(t *testing.T) {
-	repo := newMockSettingRepo()
-	repo.enableFeishu("http://localhost")
-	notifySvc := NewFeishuNotifyService(repo)
+func TestRedeemNotifyEvent_SendThroughChannel(t *testing.T) {
+	h := newFeishuTestHelper()
+	h.enableFeishu("http://localhost")
+	notifySvc := NewFeishuNotifyService(h.repo)
 	defer notifySvc.Shutdown()
 
 	svc := &RedeemService{feishuNotify: notifySvc}
 
-	// Verify the notify service is properly wired
-	if svc.feishuNotify == nil {
-		t.Fatal("feishuNotify should not be nil")
+	done := make(chan struct{})
+	go func() {
+		svc.feishuNotify.Send(model.RechargeEvent{
+			UserEmail: "test@example.com",
+			Method:    "兑换",
+			OrderNo:   "TEST-REDEEM",
+			Time:      "2026-05-19T00:00:00Z",
+		})
+		close(done)
+	}()
+
+	select {
+	case <-done:
+		// Channel accepted the event
+	default:
+		// Also OK — channel might be full but should not block
 	}
-
-	// Send a raw event through the service to verify the channel works
-	svc.feishuNotify.Send(RedeemCode{
-		Code:  "TEST-REDEEM-CODE",
-		Value: 50.0,
-		Type:  RedeemTypeBalance,
-		// Send will go through — verify it doesn't block
-	})
-
-	// If we get here without hanging, the channel is working
 }

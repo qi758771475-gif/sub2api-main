@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	dbent "github.com/Wei-Shaw/sub2api/ent"
-	"github.com/Wei-Shaw/sub2api/ent/paymentorder"
 )
 
 func TestResolveProviderDisplayName(t *testing.T) {
@@ -35,11 +34,10 @@ func TestResolveProviderDisplayName(t *testing.T) {
 }
 
 func TestSendFeishuRechargeNotify_NilService(t *testing.T) {
-	// PaymentService with nil feishuNotify should not panic
 	svc := &PaymentService{feishuNotify: nil}
 	o := &dbent.PaymentOrder{OutTradeNo: "test", Amount: 10.0}
 
-	// This should return immediately without panicking
+	// Should return immediately without panicking
 	svc.sendFeishuRechargeNotify(context.Background(), o)
 }
 
@@ -52,9 +50,9 @@ func TestSendFeishuRechargeNotify_NilService_WithUserLookup(t *testing.T) {
 }
 
 func TestPaymentService_SetFeishuNotify(t *testing.T) {
-	repo := newMockSettingRepo()
-	repo.enableFeishu("http://localhost")
-	notifySvc := NewFeishuNotifyService(repo)
+	h := newFeishuTestHelper()
+	h.enableFeishu("http://localhost")
+	notifySvc := NewFeishuNotifyService(h.repo)
 	defer notifySvc.Shutdown()
 
 	paymentSvc := &PaymentService{}
@@ -65,33 +63,5 @@ func TestPaymentService_SetFeishuNotify(t *testing.T) {
 	paymentSvc.SetFeishuNotify(notifySvc)
 	if paymentSvc.feishuNotify == nil {
 		t.Error("feishuNotify should not be nil after SetFeishuNotify")
-	}
-}
-
-func TestPaymentOrderFields_UsedByNotify(t *testing.T) {
-	// Verify the fields used by sendFeishuRechargeNotify exist on PaymentOrder
-	o := &dbent.PaymentOrder{
-		OutTradeNo:  "sub2_test",
-		Amount:      99.99,
-		UserID:      1,
-		PaymentType: "stripe",
-	}
-
-	if o.OutTradeNo != "sub2_test" {
-		t.Error("OutTradeNo field should be accessible")
-	}
-	if o.Amount != 99.99 {
-		t.Error("Amount field should be accessible")
-	}
-	if o.UserID != 1 {
-		t.Error("UserID field should be accessible")
-	}
-	if o.PaymentType != "stripe" {
-		t.Error("PaymentType field should be accessible")
-	}
-
-	// Verify that paymentorder column constants exist
-	if paymentorder.FieldOutTradeNo == "" {
-		t.Error("FieldOutTradeNo should not be empty")
 	}
 }

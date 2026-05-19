@@ -12,94 +12,35 @@ import (
 	"github.com/Wei-Shaw/sub2api/internal/model"
 )
 
-// mockSettingRepo implements SettingRepository for tests.
-type mockSettingRepo struct {
-	mu   sync.RWMutex
-	data map[string]string
+// feishuTestHelper sets up a mock repo with feishu enabled.
+type feishuTestHelper struct {
+	repo *mockSettingRepo
+	mu   sync.Mutex
 }
 
-func newMockSettingRepo() *mockSettingRepo {
-	return &mockSettingRepo{data: make(map[string]string)}
+func newFeishuTestHelper() *feishuTestHelper {
+	return &feishuTestHelper{repo: newMockSettingRepo()}
 }
 
-func (m *mockSettingRepo) Get(ctx context.Context, key string) (*Setting, error) {
-	m.mu.RLock()
-	defer m.mu.RUnlock()
-	if v, ok := m.data[key]; ok {
-		return &Setting{Key: key, Value: v}, nil
-	}
-	return nil, nil
-}
-
-func (m *mockSettingRepo) GetValue(ctx context.Context, key string) (string, error) {
-	m.mu.RLock()
-	defer m.mu.RUnlock()
-	return m.data[key], nil
-}
-
-func (m *mockSettingRepo) Set(ctx context.Context, key, value string) error {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	m.data[key] = value
-	return nil
-}
-
-func (m *mockSettingRepo) GetMultiple(ctx context.Context, keys []string) (map[string]string, error) {
-	m.mu.RLock()
-	defer m.mu.RUnlock()
-	result := make(map[string]string, len(keys))
-	for _, k := range keys {
-		result[k] = m.data[k]
-	}
-	return result, nil
-}
-
-func (m *mockSettingRepo) SetMultiple(ctx context.Context, settings map[string]string) error {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	for k, v := range settings {
-		m.data[k] = v
-	}
-	return nil
-}
-
-func (m *mockSettingRepo) GetAll(ctx context.Context) (map[string]string, error) {
-	m.mu.RLock()
-	defer m.mu.RUnlock()
-	result := make(map[string]string, len(m.data))
-	for k, v := range m.data {
-		result[k] = v
-	}
-	return result, nil
-}
-
-func (m *mockSettingRepo) Delete(ctx context.Context, key string) error {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	delete(m.data, key)
-	return nil
-}
-
-// enableFeishu sets the mock repo to have feishu enabled with a given webhook URL.
-func (m *mockSettingRepo) enableFeishu(url string) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	m.data[SettingKeyFeishuNotifyEnabled] = "true"
-	m.data[SettingKeyFeishuNotifyWebhookURL] = url
-	m.data[SettingKeyFeishuNotifyRechargeEnabled] = "true"
-	m.data[SettingKeyFeishuNotifyRedeemEnabled] = "true"
+func (h *feishuTestHelper) enableFeishu(url string) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	h.repo.data[SettingKeyFeishuNotifyEnabled] = "true"
+	h.repo.data[SettingKeyFeishuNotifyWebhookURL] = url
+	h.repo.data[SettingKeyFeishuNotifyRechargeEnabled] = "true"
+	h.repo.data[SettingKeyFeishuNotifyRedeemEnabled] = "true"
 	fields, _ := json.Marshal(model.DefaultFeishuNotifyFields())
-	m.data[SettingKeyFeishuNotifyFields] = string(fields)
+	h.repo.data[SettingKeyFeishuNotifyFields] = string(fields)
 }
 
 // --- buildCard tests ---
 
 func TestBuildCard_AllFields_Recharge(t *testing.T) {
-	repo := newMockSettingRepo()
-	repo.enableFeishu("http://localhost")
-	svc := NewFeishuNotifyService(repo)
+	h := newFeishuTestHelper()
+	h.enableFeishu("http://localhost")
+	svc := NewFeishuNotifyService(h.repo)
 	defer svc.Shutdown()
-	time.Sleep(10 * time.Millisecond) // wait for worker goroutine
+	time.Sleep(10 * time.Millisecond)
 
 	svc.reloadConfig(context.Background())
 	svc.visibleFields = model.DefaultFeishuNotifyFields()
@@ -118,7 +59,6 @@ func TestBuildCard_AllFields_Recharge(t *testing.T) {
 
 	card := svc.buildCard(event)
 
-	// Verify header
 	if card["msg_type"] != "interactive" {
 		t.Errorf("msg_type = %v, want interactive", card["msg_type"])
 	}
@@ -141,7 +81,6 @@ func TestBuildCard_AllFields_Recharge(t *testing.T) {
 		t.Errorf("template = %v, want blue", header["template"])
 	}
 
-	// Verify elements
 	elements, ok := cardMap["elements"].([]map[string]any)
 	if !ok {
 		t.Fatal("elements missing or wrong type")
@@ -152,19 +91,16 @@ func TestBuildCard_AllFields_Recharge(t *testing.T) {
 }
 
 func TestBuildCard_RedeemMethod_ChangesTitle(t *testing.T) {
-	repo := newMockSettingRepo()
-	repo.enableFeishu("http://localhost")
-	svc := NewFeishuNotifyService(repo)
+	h := newFeishuTestHelper()
+	h.enableFeishu("http://localhost")
+	svc := NewFeishuNotifyService(h.repo)
 	defer svc.Shutdown()
 	time.Sleep(10 * time.Millisecond)
 
 	svc.reloadConfig(context.Background())
 	svc.visibleFields = model.DefaultFeishuNotifyFields()
 
-	event := model.RechargeEvent{
-		UserEmail: "test@example.com",
-		Method:    "兑换",
-	}
+	event := model.RechargeEvent{UserEmail: "test@example.com", Method: "兑换"}
 	card := svc.buildCard(event)
 	cardMap := card["card"].(map[string]any)
 	header := cardMap["header"].(map[string]any)
@@ -175,21 +111,16 @@ func TestBuildCard_RedeemMethod_ChangesTitle(t *testing.T) {
 }
 
 func TestBuildCard_FieldFiltering(t *testing.T) {
-	repo := newMockSettingRepo()
-	repo.enableFeishu("http://localhost")
-	svc := NewFeishuNotifyService(repo)
+	h := newFeishuTestHelper()
+	h.enableFeishu("http://localhost")
+	svc := NewFeishuNotifyService(h.repo)
 	defer svc.Shutdown()
 	time.Sleep(10 * time.Millisecond)
 
 	svc.reloadConfig(context.Background())
-	// Only show user_email and amount
 	svc.visibleFields = []string{model.FeishuFieldUserEmail, model.FeishuFieldAmount}
 
-	event := model.RechargeEvent{
-		UserEmail: "test@example.com",
-		Amount:    50.0,
-		Method:    "直冲",
-	}
+	event := model.RechargeEvent{UserEmail: "test@example.com", Amount: 50.0, Method: "直冲"}
 	card := svc.buildCard(event)
 	cardMap := card["card"].(map[string]any)
 	elements := cardMap["elements"].([]map[string]any)
@@ -199,9 +130,9 @@ func TestBuildCard_FieldFiltering(t *testing.T) {
 }
 
 func TestBuildCard_EmptyFields(t *testing.T) {
-	repo := newMockSettingRepo()
-	repo.enableFeishu("http://localhost")
-	svc := NewFeishuNotifyService(repo)
+	h := newFeishuTestHelper()
+	h.enableFeishu("http://localhost")
+	svc := NewFeishuNotifyService(h.repo)
 	defer svc.Shutdown()
 	time.Sleep(10 * time.Millisecond)
 
@@ -220,16 +151,24 @@ func TestBuildCard_EmptyFields(t *testing.T) {
 // --- Send tests ---
 
 func TestSend_NonBlocking(t *testing.T) {
-	repo := newMockSettingRepo()
-	repo.enableFeishu("http://localhost")
-	svc := NewFeishuNotifyService(repo)
+	h := newFeishuTestHelper()
+	h.enableFeishu("http://localhost")
+	svc := NewFeishuNotifyService(h.repo)
 	defer svc.Shutdown()
 
-	// Sending should not block even with a small buffer
-	for i := 0; i < 100; i++ {
-		svc.Send(model.RechargeEvent{Method: "直冲"})
+	done := make(chan struct{})
+	go func() {
+		for i := 0; i < 100; i++ {
+			svc.Send(model.RechargeEvent{Method: "直冲"})
+		}
+		close(done)
+	}()
+	select {
+	case <-done:
+		// OK — didn't block
+	case <-time.After(time.Second):
+		t.Fatal("Send blocked")
 	}
-	// If it doesn't hang, test passes
 }
 
 // --- Shutdown tests ---
@@ -242,23 +181,16 @@ func TestShutdown_DrainsRemainingEvents(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	repo := newMockSettingRepo()
-	repo.enableFeishu(srv.URL)
-	svc := NewFeishuNotifyService(repo)
+	h := newFeishuTestHelper()
+	h.enableFeishu(srv.URL)
+	svc := NewFeishuNotifyService(h.repo)
 
-	// Send an event then shutdown immediately
-	svc.Send(model.RechargeEvent{
-		UserEmail: "test@example.com",
-		Method:    "直冲",
-		Time:      time.Now().Format(time.RFC3339),
-	})
-
+	svc.Send(model.RechargeEvent{UserEmail: "test@example.com", Method: "直冲", Time: time.Now().Format(time.RFC3339)})
 	svc.Shutdown()
 
-	// Should have received the event (drained before exit)
 	select {
 	case <-received:
-		// OK
+		// OK — shutdown drained the event
 	case <-time.After(2 * time.Second):
 		t.Error("shutdown did not drain remaining events")
 	}
@@ -267,9 +199,9 @@ func TestShutdown_DrainsRemainingEvents(t *testing.T) {
 // --- reloadConfig tests ---
 
 func TestReloadConfig_LoadsAllSettings(t *testing.T) {
-	repo := newMockSettingRepo()
-	repo.enableFeishu("https://open.feishu.cn/hook/test")
-	svc := NewFeishuNotifyService(repo)
+	h := newFeishuTestHelper()
+	h.enableFeishu("https://open.feishu.cn/hook/test")
+	svc := NewFeishuNotifyService(h.repo)
 	defer svc.Shutdown()
 
 	svc.reloadConfig(context.Background())
@@ -304,9 +236,9 @@ func TestReloadConfig_DisabledByDefault(t *testing.T) {
 }
 
 func TestReloadConfig_CacheTTL(t *testing.T) {
-	repo := newMockSettingRepo()
-	repo.enableFeishu("http://first-url.local")
-	svc := NewFeishuNotifyService(repo)
+	h := newFeishuTestHelper()
+	h.enableFeishu("http://first-url.local")
+	svc := NewFeishuNotifyService(h.repo)
 	defer svc.Shutdown()
 
 	svc.reloadConfig(context.Background())
@@ -314,16 +246,16 @@ func TestReloadConfig_CacheTTL(t *testing.T) {
 		t.Fatalf("first load failed: %s", svc.webhookURL)
 	}
 
-	// Change the URL in the repo without calling reloadConfig
-	repo.Set(context.Background(), SettingKeyFeishuNotifyWebhookURL, "http://second-url.local")
+	// Change URL in repo
+	h.repo.data[SettingKeyFeishuNotifyWebhookURL] = "http://second-url.local"
 
-	// reloadConfig should return cached version (TTL not expired)
+	// Should return cached version
 	svc.reloadConfig(context.Background())
 	if svc.webhookURL != "http://first-url.local" {
-		t.Error("config cache should have prevented reload, but URL changed")
+		t.Error("config cache should have prevented reload")
 	}
 
-	// Force cache expiry
+	// Expire cache
 	svc.configExpiresAt = time.Time{}
 	svc.reloadConfig(context.Background())
 	if svc.webhookURL != "http://second-url.local" {
@@ -350,23 +282,28 @@ func TestReloadConfig_DefaultFieldsWhenEmpty(t *testing.T) {
 // --- SendTestCard / SendTestCardWithURL tests ---
 
 func TestSendTestCard_SendsToConfiguredURL(t *testing.T) {
-	received := make(chan []byte, 1)
+	received := make(chan struct{}, 1)
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		var body []byte
-		r.Body.Read(body)
-		received <- body
+		received <- struct{}{}
 	}))
 	defer srv.Close()
 
-	repo := newMockSettingRepo()
-	repo.enableFeishu(srv.URL)
-	svc := NewFeishuNotifyService(repo)
+	h := newFeishuTestHelper()
+	h.enableFeishu(srv.URL)
+	svc := NewFeishuNotifyService(h.repo)
 	defer svc.Shutdown()
 
 	err := svc.SendTestCard(context.Background())
 	if err != nil {
 		t.Errorf("SendTestCard returned error: %v", err)
+	}
+
+	select {
+	case <-received:
+		// OK
+	case <-time.After(time.Second):
+		t.Error("server did not receive request")
 	}
 }
 
@@ -389,10 +326,9 @@ func TestSendTestCardWithURL_UsesProvidedURL(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	repo := newMockSettingRepo()
-	// Don't set a URL in repo — use the URL parameter instead
-	repo.enableFeishu("")
-	svc := NewFeishuNotifyService(repo)
+	h := newFeishuTestHelper()
+	h.enableFeishu("") // empty in repo, use URL param
+	svc := NewFeishuNotifyService(h.repo)
 	defer svc.Shutdown()
 
 	err := svc.SendTestCardWithURL(context.Background(), srv.URL)
@@ -403,7 +339,7 @@ func TestSendTestCardWithURL_UsesProvidedURL(t *testing.T) {
 	select {
 	case <-received:
 		// OK
-	case <-time.After(1 * time.Second):
+	case <-time.After(time.Second):
 		t.Error("server did not receive request")
 	}
 }
@@ -427,9 +363,9 @@ func TestHTTPPost_ServerError(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	repo := newMockSettingRepo()
-	repo.enableFeishu(srv.URL)
-	svc := NewFeishuNotifyService(repo)
+	h := newFeishuTestHelper()
+	h.enableFeishu(srv.URL)
+	svc := NewFeishuNotifyService(h.repo)
 	defer svc.Shutdown()
 
 	card := map[string]any{"msg_type": "interactive"}
@@ -440,9 +376,9 @@ func TestHTTPPost_ServerError(t *testing.T) {
 }
 
 func TestHTTPPost_InvalidURL(t *testing.T) {
-	repo := newMockSettingRepo()
-	repo.enableFeishu("http://localhost")
-	svc := NewFeishuNotifyService(repo)
+	h := newFeishuTestHelper()
+	h.enableFeishu("http://localhost")
+	svc := NewFeishuNotifyService(h.repo)
 	defer svc.Shutdown()
 
 	card := map[string]any{"msg_type": "interactive"}
@@ -452,9 +388,9 @@ func TestHTTPPost_InvalidURL(t *testing.T) {
 	}
 }
 
-// --- Integration: processEvent filtering ---
+// --- processEvent filtering tests ---
 
-func TestProcessEvent_RespectsEnabledFlags(t *testing.T) {
+func TestProcessEvent_RespectsRechargeDisabled(t *testing.T) {
 	received := make(chan struct{}, 5)
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -462,19 +398,15 @@ func TestProcessEvent_RespectsEnabledFlags(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	repo := newMockSettingRepo()
-	repo.enableFeishu(srv.URL)
-	// Disable recharge events
-	repo.Set(context.Background(), SettingKeyFeishuNotifyRechargeEnabled, "false")
+	h := newFeishuTestHelper()
+	h.enableFeishu(srv.URL)
+	h.repo.data[SettingKeyFeishuNotifyRechargeEnabled] = "false"
 
-	svc := NewFeishuNotifyService(repo)
+	svc := NewFeishuNotifyService(h.repo)
 	defer svc.Shutdown()
 	time.Sleep(10 * time.Millisecond)
 
-	// Force reload to pick up disabled recharge
-	svc.configExpiresAt = time.Time{}
-
-	// Send a recharge event — should be filtered out
+	svc.configExpiresAt = time.Time{} // force reload
 	svc.Send(model.RechargeEvent{Method: "直冲", Time: time.Now().Format(time.RFC3339)})
 	time.Sleep(100 * time.Millisecond)
 
@@ -494,17 +426,13 @@ func TestProcessEvent_SendsRedeemWhenEnabled(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	repo := newMockSettingRepo()
-	repo.enableFeishu(srv.URL)
-	svc := NewFeishuNotifyService(repo)
+	h := newFeishuTestHelper()
+	h.enableFeishu(srv.URL)
+	svc := NewFeishuNotifyService(h.repo)
 	defer svc.Shutdown()
 	time.Sleep(10 * time.Millisecond)
 
-	svc.Send(model.RechargeEvent{
-		UserEmail: "test@example.com",
-		Method:    "兑换",
-		Time:      time.Now().Format(time.RFC3339),
-	})
+	svc.Send(model.RechargeEvent{UserEmail: "test@example.com", Method: "兑换", Time: time.Now().Format(time.RFC3339)})
 
 	select {
 	case <-received:
