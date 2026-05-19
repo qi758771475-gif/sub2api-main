@@ -105,7 +105,7 @@ func (s *FeishuNotifyService) processEvent(event model.RechargeEvent) {
 		return
 	}
 	card := s.buildCard(event)
-	if err := s.httpPost(ctx, card); err != nil {
+	if err := s.httpPost(ctx, webhookURL, card); err != nil {
 		slog.Warn("feishu notify send failed", "error", err)
 	}
 }
@@ -204,17 +204,12 @@ func (s *FeishuNotifyService) buildCard(event model.RechargeEvent) map[string]an
 	}
 }
 
-func (s *FeishuNotifyService) httpPost(ctx context.Context, card map[string]any) error {
+func (s *FeishuNotifyService) httpPost(ctx context.Context, url string, card map[string]any) error {
 	body, err := json.Marshal(card)
 	if err != nil {
 		return fmt.Errorf("marshal card: %w", err)
 	}
-
-	s.mu.RLock()
-	webhookURL := s.webhookURL
-	s.mu.RUnlock()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, webhookURL, bytes.NewReader(body))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(body))
 	if err != nil {
 		return fmt.Errorf("create request: %w", err)
 	}
@@ -230,13 +225,24 @@ func (s *FeishuNotifyService) httpPost(ctx context.Context, card map[string]any)
 	return nil
 }
 
-// SendTestCard sends a sample notification card directly (bypasses channel/worker).
+// SendTestCard sends a sample notification card using the configured webhook URL.
 func (s *FeishuNotifyService) SendTestCard(ctx context.Context) error {
 	s.reloadConfig(ctx)
 	s.mu.RLock()
-	webhookURL := s.webhookURL
+	url := s.webhookURL
 	s.mu.RUnlock()
-	if webhookURL == "" {
+	return s.sendTestCard(ctx, url)
+}
+
+// SendTestCardWithURL sends a sample notification card to the given webhook URL.
+// The frontend test-send button provides the URL from the form input without saving first.
+func (s *FeishuNotifyService) SendTestCardWithURL(ctx context.Context, url string) error {
+	s.reloadConfig(ctx)
+	return s.sendTestCard(ctx, url)
+}
+
+func (s *FeishuNotifyService) sendTestCard(ctx context.Context, url string) error {
+	if url == "" {
 		return fmt.Errorf("webhook URL is not configured")
 	}
 	card := s.buildCard(model.RechargeEvent{
@@ -250,5 +256,5 @@ func (s *FeishuNotifyService) SendTestCard(ctx context.Context) error {
 		OrderNo:        "TEST-001",
 		Time:           time.Now().Format(time.RFC3339),
 	})
-	return s.httpPost(ctx, card)
+	return s.httpPost(ctx, url, card)
 }

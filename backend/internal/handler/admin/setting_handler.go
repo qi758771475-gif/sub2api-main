@@ -2857,6 +2857,11 @@ func (h *SettingHandler) TestWebSearchEmulation(c *gin.Context) {
 	response.Success(c, result)
 }
 
+// testFeishuRequest is the request body for the test-feishu endpoint.
+type testFeishuRequest struct {
+	WebhookURL string `json:"webhook_url"`
+}
+
 // TestFeishu 发送飞书测试消息
 // POST /api/v1/admin/settings/test-feishu
 func (h *SettingHandler) TestFeishu(c *gin.Context) {
@@ -2864,7 +2869,13 @@ func (h *SettingHandler) TestFeishu(c *gin.Context) {
 		response.BadRequest(c, "feishu notify service not available")
 		return
 	}
-	err := h.feishuNotifyService.SendTestCard(c.Request.Context())
+	var req testFeishuRequest
+	var err error
+	if err = c.ShouldBindJSON(&req); err == nil && req.WebhookURL != "" {
+		err = h.feishuNotifyService.SendTestCardWithURL(c.Request.Context(), req.WebhookURL)
+	} else {
+		err = h.feishuNotifyService.SendTestCard(c.Request.Context())
+	}
 	if err != nil {
 		response.Error(c, http.StatusInternalServerError, err.Error())
 		return

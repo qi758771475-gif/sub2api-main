@@ -5794,7 +5794,7 @@ async function testFeishuWebhook() {
   testingFeishu.value = true;
   feishuTestResult.value = null;
   try {
-    await adminAPI.settings.testFeishu();
+    await adminAPI.settings.testFeishu(form.feishu_notify_webhook_url);
     feishuTestResult.value = { success: true, message: t("admin.settings.notification.testSendSuccess") };
   } catch (e: unknown) {
     feishuTestResult.value = {

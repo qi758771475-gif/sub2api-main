@@ -765,9 +765,10 @@ export async function sendTestEmail(
  * Test Feishu webhook notification
  * @returns Test result message
  */
-export async function testFeishu(): Promise<{ message: string }> {
+export async function testFeishu(webhookUrl?: string): Promise<{ message: string }> {
   const { data } = await apiClient.post<{ message: string }>(
     "/admin/settings/test-feishu",
+    webhookUrl ? { webhook_url: webhookUrl } : undefined,
   );
   return data;
 }
