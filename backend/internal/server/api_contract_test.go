@@ -868,6 +868,11 @@ func TestAPIContracts(t *testing.T) {
 					"available_channels_enabled": false,
 					"risk_control_enabled": false,
 					"affiliate_enabled": false,
+				"feishu_notify_enabled": false,
+				"feishu_notify_fields": null,
+				"feishu_notify_recharge_enabled": false,
+				"feishu_notify_redeem_enabled": false,
+				"feishu_notify_webhook_url": "",
 					"wechat_connect_enabled": false,
 					"wechat_connect_app_id": "",
 					"wechat_connect_app_secret_configured": false,
@@ -1090,6 +1095,11 @@ func TestAPIContracts(t *testing.T) {
 					"available_channels_enabled": false,
 					"risk_control_enabled": false,
 					"affiliate_enabled": false,
+				"feishu_notify_enabled": false,
+				"feishu_notify_fields": null,
+				"feishu_notify_recharge_enabled": false,
+				"feishu_notify_redeem_enabled": false,
+				"feishu_notify_webhook_url": "",
 					"wechat_connect_enabled": true,
 					"wechat_connect_app_id": "wx-open-config",
 					"wechat_connect_app_secret_configured": true,
@@ -1254,7 +1264,7 @@ func newContractDeps(t *testing.T) *contractDeps {
 	authHandler := handler.NewAuthHandler(cfg, nil, userService, settingService, nil, redeemService, nil, nil)
 	apiKeyHandler := handler.NewAPIKeyHandler(apiKeyService)
 	usageHandler := handler.NewUsageHandler(usageService, apiKeyService)
-	adminSettingHandler := adminhandler.NewSettingHandler(settingService, nil, nil, nil, nil, nil, nil, nil, nil)
+	adminSettingHandler := adminhandler.NewSettingHandler(settingService, nil, nil, nil, nil, nil, nil, nil)
 	adminAccountHandler := adminhandler.NewAccountHandler(adminService, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	jwtAuth := func(c *gin.Context) {
