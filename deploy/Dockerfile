@@ -7,7 +7,7 @@
 # =============================================================================
 
 ARG NODE_IMAGE=node:24-alpine
-ARG GOLANG_IMAGE=golang:1.26.2-alpine
+ARG GOLANG_IMAGE=golang:1.26.3-alpine
 ARG ALPINE_IMAGE=alpine:3.20
 ARG GOPROXY=https://goproxy.cn,direct
 ARG GOSUMDB=sum.golang.google.cn
@@ -73,9 +73,9 @@ RUN CGO_ENABLED=0 GOOS=linux go build \
 FROM ${ALPINE_IMAGE}
 
 # Labels
-LABEL maintainer="qi758771475-gif"
+LABEL maintainer="Wei-Shaw <github.com/Wei-Shaw>"
 LABEL description="Sub2API - AI API Gateway Platform"
-LABEL org.opencontainers.image.source="https://github.com/qi758771475-gif/sub2api-main"
+LABEL org.opencontainers.image.source="https://github.com/Wei-Shaw/sub2api"
 
 # Install runtime dependencies
 RUN apk add --no-cache \

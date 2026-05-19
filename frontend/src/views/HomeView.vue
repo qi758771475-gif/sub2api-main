@@ -48,14 +48,6 @@
 
         <!-- Nav Actions -->
         <div class="flex items-center gap-3">
-          <!-- Config Guide -->
-          <router-link
-            to="/docs"
-            class="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-dark-400 dark:hover:bg-dark-800 dark:hover:text-white"
-          >
-            {{ locale === 'zh' ? '配置教程' : 'Guide' }}
-          </router-link>
-
           <!-- Language Switcher -->
           <LocaleSwitcher />
 
@@ -419,7 +411,7 @@ import { useAuthStore, useAppStore } from '@/stores'
 import LocaleSwitcher from '@/components/common/LocaleSwitcher.vue'
 import Icon from '@/components/icons/Icon.vue'
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
 
 const authStore = useAuthStore()
 const appStore = useAppStore()

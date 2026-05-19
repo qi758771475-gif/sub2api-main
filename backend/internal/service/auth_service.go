@@ -157,7 +157,7 @@ func (s *AuthService) RegisterWithVerification(ctx context.Context, email, passw
 			return "", nil, ErrInvitationCodeInvalid
 		}
 		// 检查类型和状态
-		if redeemCode.Type != RedeemTypeInvitation || redeemCode.Status != StatusUnused {
+		if redeemCode.Type != RedeemTypeInvitation || !redeemCode.CanUse() {
 			logger.LegacyPrintf("service.auth", "[Auth] Invitation code invalid: type=%s, status=%s", redeemCode.Type, redeemCode.Status)
 			return "", nil, ErrInvitationCodeInvalid
 		}
@@ -231,14 +231,8 @@ func (s *AuthService) RegisterWithVerification(ctx context.Context, email, passw
 			logger.LegacyPrintf("service.auth", "[Auth] Failed to initialize affiliate profile for user %d: %v", user.ID, err)
 		}
 		if code := strings.TrimSpace(affiliateCode); code != "" {
-			forceBind := s.settingService != nil && s.settingService.IsAffiliateLinkForceBindEnabled(ctx)
 			if err := s.affiliateService.BindInviterByCode(ctx, user.ID, code); err != nil {
-				if forceBind {
-					// 强制绑定模式：绑定失败则回滚用户，注册失败
-					_ = s.userRepo.Delete(ctx, user.ID)
-					return "", nil, err
-				}
-				// 非强制模式：邀请返利码绑定失败不影响注册，只记录日志
+				// 邀请返利码绑定失败不影响注册，只记录日志
 				logger.LegacyPrintf("service.auth", "[Auth] Failed to bind affiliate inviter for user %d: %v", user.ID, err)
 			}
 		}
@@ -566,11 +560,25 @@ func (s *AuthService) LoginOrRegisterOAuth(ctx context.Context, email, username 
 	return token, user, nil
 }
 
+// canBypassRegistrationDisabledForOAuth 在钉钉企业模式（internal_only）且
+// dingtalk_connect_bypass_registration=true 时，允许跳过全局 registration_enabled 检查。
+func (s *AuthService) canBypassRegistrationDisabledForOAuth(ctx context.Context, signupSource string) bool {
+	if signupSource != "dingtalk" {
+		return false
+	}
+	cfg, err := s.settingService.GetDingTalkConnectOAuthConfig(ctx)
+	if err != nil || !cfg.Enabled || !cfg.BypassRegistration {
+		return false
+	}
+	return cfg.CorpRestrictionPolicy == "internal_only"
+}
+
 // LoginOrRegisterOAuthWithTokenPair 用于第三方 OAuth/SSO 登录，返回完整的 TokenPair。
 // 与 LoginOrRegisterOAuth 功能相同，但返回 TokenPair 而非单个 token。
 // invitationCode 仅在邀请码注册模式下新用户注册时使用；已有账号登录时忽略。
 // affiliateCode 用于邀请返利绑定，仅在新用户注册时使用。
-func (s *AuthService) LoginOrRegisterOAuthWithTokenPair(ctx context.Context, email, username, invitationCode, affiliateCode string) (*TokenPair, *User, error) {
+// signupSource 标识来源渠道（"dingtalk"/"linuxdo"/"wechat"/"oidc" 等），仅用于豁免检查。
+func (s *AuthService) LoginOrRegisterOAuthWithTokenPair(ctx context.Context, email, username, invitationCode, affiliateCode, signupSource string) (*TokenPair, *User, error) {
 	// 检查 refreshTokenCache 是否可用
 	if s.refreshTokenCache == nil {
 		return nil, nil, errors.New("refresh token cache not configured")
@@ -593,7 +601,7 @@ func (s *AuthService) LoginOrRegisterOAuthWithTokenPair(ctx context.Context, ema
 	if err != nil {
 		if errors.Is(err, ErrUserNotFound) {
 			// OAuth 首次登录视为注册
-			if s.settingService == nil || !s.settingService.IsRegistrationEnabled(ctx) {
+			if s.settingService == nil || (!s.settingService.IsRegistrationEnabled(ctx) && !s.canBypassRegistrationDisabledForOAuth(ctx, signupSource)) {
 				return nil, nil, ErrRegDisabled
 			}
 
@@ -607,7 +615,7 @@ func (s *AuthService) LoginOrRegisterOAuthWithTokenPair(ctx context.Context, ema
 				if err != nil {
 					return nil, nil, ErrInvitationCodeInvalid
 				}
-				if redeemCode.Type != RedeemTypeInvitation || redeemCode.Status != StatusUnused {
+				if redeemCode.Type != RedeemTypeInvitation || !redeemCode.CanUse() {
 					return nil, nil, ErrInvitationCodeInvalid
 				}
 				invitationRedeemCode = redeemCode
@@ -623,7 +631,11 @@ func (s *AuthService) LoginOrRegisterOAuthWithTokenPair(ctx context.Context, ema
 				return nil, nil, fmt.Errorf("hash password: %w", err)
 			}
 
-			signupSource := inferLegacySignupSource(email)
+			// 优先用 caller 显式传入的 signupSource（如 "dingtalk" / "linuxdo" / "oidc" / "wechat"），
+			// 否则才按邮箱后缀推断——避免有真实邮箱的 OAuth 用户被推断为 "email" 渠道，导致渠道授权错读。
+			if strings.TrimSpace(signupSource) == "" {
+				signupSource = inferLegacySignupSource(email)
+			}
 			grantPlan := s.resolveSignupGrantPlan(ctx, signupSource)
 			var defaultRPMLimit int
 			if s.settingService != nil {
@@ -673,10 +685,7 @@ func (s *AuthService) LoginOrRegisterOAuthWithTokenPair(ctx context.Context, ema
 					user = newUser
 					s.postAuthUserBootstrap(ctx, user, signupSource, false)
 					s.assignSubscriptions(ctx, user.ID, grantPlan.Subscriptions, "auto assigned by signup defaults")
-					if err := s.bindOAuthAffiliate(ctx, user.ID, affiliateCode); err != nil {
-						_ = s.userRepo.Delete(ctx, user.ID)
-						return nil, nil, err
-					}
+					s.bindOAuthAffiliate(ctx, user.ID, affiliateCode)
 				}
 			} else {
 				if err := s.userRepo.Create(ctx, newUser); err != nil {
@@ -694,10 +703,7 @@ func (s *AuthService) LoginOrRegisterOAuthWithTokenPair(ctx context.Context, ema
 					user = newUser
 					s.postAuthUserBootstrap(ctx, user, signupSource, false)
 					s.assignSubscriptions(ctx, user.ID, grantPlan.Subscriptions, "auto assigned by signup defaults")
-					if err := s.bindOAuthAffiliate(ctx, user.ID, affiliateCode); err != nil {
-						_ = s.userRepo.Delete(ctx, user.ID)
-						return nil, nil, err
-					}
+					s.bindOAuthAffiliate(ctx, user.ID, affiliateCode)
 					if invitationRedeemCode != nil {
 						if err := s.redeemRepo.Use(ctx, invitationRedeemCode.ID, user.ID); err != nil {
 							return nil, nil, ErrInvitationCodeInvalid
@@ -787,35 +793,31 @@ func authSourceSignupSettings(defaults *AuthSourceDefaultSettings, signupSource 
 		return defaults.OIDC, true
 	case "wechat":
 		return defaults.WeChat, true
+	case "github":
+		return defaults.GitHub, true
+	case "google":
+		return defaults.Google, true
+	case "dingtalk":
+		return defaults.DingTalk, true
 	default:
 		return ProviderDefaultGrantSettings{}, false
 	}
 }
 
 // bindOAuthAffiliate initializes the affiliate profile and binds the inviter
-// for an OAuth-registered user.
-// When affiliate_link_force_bind is enabled and affiliateCode is non-empty,
-// binding failure is returned as an error (caller must handle it).
-// Otherwise, failures are logged but never block registration.
-func (s *AuthService) bindOAuthAffiliate(ctx context.Context, userID int64, affiliateCode string) error {
+// for an OAuth-registered user. Failures are logged but never block registration.
+func (s *AuthService) bindOAuthAffiliate(ctx context.Context, userID int64, affiliateCode string) {
 	if s.affiliateService == nil || userID <= 0 {
-		return nil
+		return
 	}
 	if _, err := s.affiliateService.EnsureUserAffiliate(ctx, userID); err != nil {
 		logger.LegacyPrintf("service.auth", "[Auth] Failed to initialize affiliate profile for user %d: %v", userID, err)
 	}
-	code := strings.TrimSpace(affiliateCode)
-	if code == "" {
-		return nil
-	}
-	forceBind := s.settingService != nil && s.settingService.IsAffiliateLinkForceBindEnabled(ctx)
-	if err := s.affiliateService.BindInviterByCode(ctx, userID, code); err != nil {
-		if forceBind {
-			return err
+	if code := strings.TrimSpace(affiliateCode); code != "" {
+		if err := s.affiliateService.BindInviterByCode(ctx, userID, code); err != nil {
+			logger.LegacyPrintf("service.auth", "[Auth] Failed to bind affiliate inviter for user %d: %v", userID, err)
 		}
-		logger.LegacyPrintf("service.auth", "[Auth] Failed to bind affiliate inviter for user %d: %v", userID, err)
 	}
-	return nil
 }
 
 func (s *AuthService) postAuthUserBootstrap(ctx context.Context, user *User, signupSource string, touchLogin bool) {
@@ -1010,6 +1012,8 @@ func (s *AuthService) ensureEmailAuthIdentity(ctx context.Context, user *User, s
 func inferLegacySignupSource(email string) string {
 	normalized := strings.ToLower(strings.TrimSpace(email))
 	switch {
+	case strings.HasSuffix(normalized, DingTalkConnectSyntheticEmailDomain):
+		return "dingtalk"
 	case strings.HasSuffix(normalized, LinuxDoConnectSyntheticEmailDomain):
 		return "linuxdo"
 	case strings.HasSuffix(normalized, OIDCConnectSyntheticEmailDomain):
@@ -1104,7 +1108,8 @@ func isReservedEmail(email string) bool {
 	normalized := strings.ToLower(strings.TrimSpace(email))
 	return strings.HasSuffix(normalized, LinuxDoConnectSyntheticEmailDomain) ||
 		strings.HasSuffix(normalized, OIDCConnectSyntheticEmailDomain) ||
-		strings.HasSuffix(normalized, WeChatConnectSyntheticEmailDomain)
+		strings.HasSuffix(normalized, WeChatConnectSyntheticEmailDomain) ||
+		strings.HasSuffix(normalized, DingTalkConnectSyntheticEmailDomain)
 }
 
 // GenerateToken 生成JWT access token

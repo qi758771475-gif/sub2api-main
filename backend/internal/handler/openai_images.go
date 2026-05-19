@@ -85,6 +85,10 @@ func (h *OpenAIGatewayHandler) Images(c *gin.Context) {
 		h.errorResponse(c, http.StatusForbidden, "permission_error", service.ImageGenerationPermissionMessage())
 		return
 	}
+	if decision := h.checkContentModeration(c, reqLog, apiKey, subject, service.ContentModerationProtocolOpenAIImages, parsed.Model, parsed.ModerationBody()); decision != nil && decision.Blocked {
+		h.errorResponse(c, contentModerationStatus(decision), contentModerationErrorCode(decision), decision.Message)
+		return
+	}
 	imageReleaseFunc, acquired := h.acquireImageGenerationSlot(c, streamStarted)
 	if !acquired {
 		return
@@ -153,6 +157,7 @@ func (h *OpenAIGatewayHandler) Images(c *gin.Context) {
 				zap.Int("excluded_account_count", len(failedAccountIDs)),
 			)
 			if len(failedAccountIDs) == 0 {
+				markOpsRoutingCapacityLimitedIfNoAvailable(c, err)
 				h.handleStreamingAwareError(c, http.StatusServiceUnavailable, "api_error", "No available compatible accounts", streamStarted)
 				return
 			}
@@ -164,6 +169,7 @@ func (h *OpenAIGatewayHandler) Images(c *gin.Context) {
 			return
 		}
 		if selection == nil || selection.Account == nil {
+			markOpsRoutingCapacityLimited(c)
 			h.handleStreamingAwareError(c, http.StatusServiceUnavailable, "api_error", "No available compatible accounts", streamStarted)
 			return
 		}

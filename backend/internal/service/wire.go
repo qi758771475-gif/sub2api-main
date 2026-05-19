@@ -8,6 +8,7 @@ import (
 	dbent "github.com/Wei-Shaw/sub2api/ent"
 	"github.com/Wei-Shaw/sub2api/internal/config"
 	"github.com/Wei-Shaw/sub2api/internal/payment"
+	"github.com/Wei-Shaw/sub2api/internal/pkg/antigravity"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/logger"
 	"github.com/google/wire"
 	"github.com/redis/go-redis/v9"
@@ -395,6 +396,7 @@ func ProvideSettingService(settingRepo SettingRepository, groupRepo GroupReposit
 	svc := NewSettingService(settingRepo, cfg)
 	svc.SetDefaultSubscriptionGroupReader(groupRepo)
 	svc.SetProxyRepository(proxyRepo)
+	antigravity.SetUserAgentVersionResolver(svc.GetAntigravityUserAgentVersion)
 	return svc
 }
 
@@ -428,6 +430,23 @@ func ProvideAPIKeyService(
 }
 
 // ProviderSet is the Wire provider set for all services
+func ProvidePaymentService(
+	entClient *dbent.Client,
+	registry *payment.Registry,
+	loadBalancer payment.LoadBalancer,
+	redeemService *RedeemService,
+	subscriptionSvc *SubscriptionService,
+	configService *PaymentConfigService,
+	userRepo UserRepository,
+	groupRepo GroupRepository,
+	affiliateService *AffiliateService,
+	feishuNotify *FeishuNotifyService,
+) *PaymentService {
+	svc := NewPaymentService(entClient, registry, loadBalancer, redeemService, subscriptionSvc, configService, userRepo, groupRepo, affiliateService)
+	svc.SetFeishuNotify(feishuNotify)
+	return svc
+}
+
 var ProviderSet = wire.NewSet(
 	// Core services
 	NewAuthService,
@@ -510,6 +529,7 @@ var ProviderSet = wire.NewSet(
 	NewGroupCapacityService,
 	NewChannelService,
 	NewModelPricingResolver,
+	NewContentModerationService,
 	NewAffiliateService,
 	ProvidePaymentConfigService,
 	ProvidePaymentService,
@@ -519,24 +539,6 @@ var ProviderSet = wire.NewSet(
 	ProvideChannelMonitorRunner,
 	NewChannelMonitorRequestTemplateService,
 )
-
-// ProvidePaymentService wraps NewPaymentService and injects FeishuNotifyService.
-func ProvidePaymentService(
-	entClient *dbent.Client,
-	registry *payment.Registry,
-	loadBalancer payment.LoadBalancer,
-	redeemService *RedeemService,
-	subscriptionSvc *SubscriptionService,
-	configService *PaymentConfigService,
-	userRepo UserRepository,
-	groupRepo GroupRepository,
-	affiliateService *AffiliateService,
-	feishuNotify *FeishuNotifyService,
-) *PaymentService {
-	svc := NewPaymentService(entClient, registry, loadBalancer, redeemService, subscriptionSvc, configService, userRepo, groupRepo, affiliateService)
-	svc.SetFeishuNotify(feishuNotify)
-	return svc
-}
 
 // ProvidePaymentConfigService wraps NewPaymentConfigService to accept the named
 // payment.EncryptionKey type instead of raw []byte, avoiding Wire ambiguity.

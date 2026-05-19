@@ -20,59 +20,8 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# GitHub repository info
-GITHUB_REPO="qi758771475-gif/sub2api-main"
-GITHUB_BRANCH="master"
-GITHUB_DEPLOY_DIR="deploy"
-GITHUB_RAW_URL="https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/${GITHUB_DEPLOY_DIR}"
-GITHUB_API_URL="https://api.github.com/repos/${GITHUB_REPO}/contents/${GITHUB_DEPLOY_DIR}"
-
-# Download file from GitHub with fallback strategies
-# Usage: github_download <filename> <output_path>
-github_download() {
-    local filename="$1"
-    local output="$2"
-    local raw_url="${GITHUB_RAW_URL}/${filename}"
-    local api_url="${GITHUB_API_URL}/${filename}?ref=${GITHUB_BRANCH}"
-
-    # Strategy 1: raw.githubusercontent.com (with proxy, i.e. default behavior)
-    if command_exists curl; then
-        curl -sSL --connect-timeout 10 --max-time 60 "${raw_url}" -o "${output}" 2>/dev/null
-    elif command_exists wget; then
-        wget -q --timeout=60 "${raw_url}" -O "${output}" 2>/dev/null
-    fi
-
-    # Validate: not empty and not an error page
-    if [ -s "${output}" ] && ! grep -qi "404\|not found\|403\|forbidden" "${output}" 2>/dev/null; then
-        return 0
-    fi
-
-    # Strategy 2: raw.githubusercontent.com without proxy
-    if command_exists curl; then
-        curl -sSL --noproxy '*' --connect-timeout 10 --max-time 60 "${raw_url}" -o "${output}" 2>/dev/null
-    elif command_exists wget; then
-        wget -q --no-proxy --timeout=60 "${raw_url}" -O "${output}" 2>/dev/null
-    fi
-
-    if [ -s "${output}" ] && ! grep -qi "404\|not found\|403\|forbidden" "${output}" 2>/dev/null; then
-        return 0
-    fi
-
-    # Strategy 3: GitHub API (returns base64-encoded content in JSON)
-    if command_exists curl; then
-        local api_response
-        api_response=$(curl -sSL --connect-timeout 10 --max-time 60 "${api_url}" 2>/dev/null)
-        if [ -n "${api_response}" ] && echo "${api_response}" | grep -q '"content"'; then
-            echo "${api_response}" | grep '"content"' | sed 's/.*"content"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/' | tr -d '\n' | base64 -d > "${output}" 2>/dev/null
-            if [ -s "${output}" ]; then
-                return 0
-            fi
-        fi
-    fi
-
-    # All strategies failed
-    return 1
-}
+# GitHub raw content base URL
+GITHUB_RAW_URL="https://raw.githubusercontent.com/Wei-Shaw/sub2api/main/deploy"
 
 # Print colored message
 print_info() {
@@ -118,15 +67,7 @@ main() {
     # Check if deployment already exists
     if [ -f "docker-compose.yml" ] && [ -f ".env" ]; then
         print_warning "Deployment files already exist in current directory."
-        # Use /dev/tty for input when running via pipe (curl | bash)
-        if [ -t 0 ]; then
-            read -p "Overwrite existing files? (y/N): " -r
-        elif [ -e /dev/tty ]; then
-            read -p "Overwrite existing files? (y/N): " -r < /dev/tty
-        else
-            print_info "Non-interactive mode detected. Overwriting existing files."
-            REPLY="y"
-        fi
+        read -p "Overwrite existing files? (y/N): " -r
         echo
         if [[ ! $REPLY =~ ^[Yy]$ ]]; then
             print_info "Cancelled."
@@ -136,19 +77,22 @@ main() {
 
     # Download docker-compose.local.yml and save as docker-compose.yml
     print_info "Downloading docker-compose.yml..."
-    if ! github_download "docker-compose.local.yml" "docker-compose.yml"; then
-        print_error "Failed to download docker-compose.yml after multiple attempts."
-        print_error "Please download manually from GitHub and place in current directory."
+    if command_exists curl; then
+        curl -sSL "${GITHUB_RAW_URL}/docker-compose.local.yml" -o docker-compose.yml
+    elif command_exists wget; then
+        wget -q "${GITHUB_RAW_URL}/docker-compose.local.yml" -O docker-compose.yml
+    else
+        print_error "Neither curl nor wget is installed. Please install one of them."
         exit 1
     fi
     print_success "Downloaded docker-compose.yml"
 
     # Download .env.example
     print_info "Downloading .env.example..."
-    if ! github_download ".env.example" ".env.example"; then
-        print_error "Failed to download .env.example after multiple attempts."
-        print_error "Please download manually from GitHub and place in current directory."
-        exit 1
+    if command_exists curl; then
+        curl -sSL "${GITHUB_RAW_URL}/.env.example" -o .env.example
+    else
+        wget -q "${GITHUB_RAW_URL}/.env.example" -O .env.example
     fi
     print_success "Downloaded .env.example"
 

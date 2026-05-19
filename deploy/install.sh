@@ -2,10 +2,25 @@
 #
 # Sub2API Installation Script
 # Sub2API 安装脚本
-# Usage: curl -sSL https://raw.githubusercontent.com/qi758771475-gif/sub2api-main/master/deploy/install.sh | bash
+# Usage: curl -sSL https://raw.githubusercontent.com/Wei-Shaw/sub2api/main/deploy/install.sh | bash
 #
 
 set -e
+
+# Bash 4+ is required for associative arrays used by the localized message table.
+# Keep this guard before any Bash 4-only syntax so older shells fail with a clear hint.
+if [ -z "${BASH_VERSION:-}" ]; then
+    echo "Error: This installer must be run with Bash 4.0 or later." >&2
+    echo "Please install Bash 4+ and run it with that interpreter." >&2
+    exit 1
+fi
+
+BASH_MAJOR_VERSION="${BASH_VERSION%%.*}"
+if [ "$BASH_MAJOR_VERSION" -lt 4 ]; then
+    echo "Error: Bash 4.0 or later is required. Current version: $BASH_VERSION" >&2
+    echo "Please install Bash 4+ and retry with that interpreter." >&2
+    exit 1
+fi
 
 # Colors
 RED='\033[0;31m'
@@ -16,7 +31,7 @@ CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 # Configuration
-GITHUB_REPO="qi758771475-gif/sub2api-main"
+GITHUB_REPO="Wei-Shaw/sub2api"
 INSTALL_DIR="/opt/sub2api"
 SERVICE_NAME="sub2api"
 SERVICE_USER="sub2api"
@@ -655,7 +670,7 @@ install_service() {
     cat > /etc/systemd/system/sub2api.service << EOF
 [Unit]
 Description=Sub2API - AI API Gateway Platform
-Documentation=https://github.com/qi758771475-gif/sub2api-main
+Documentation=https://github.com/Wei-Shaw/sub2api
 After=network.target postgresql.service redis.service
 Wants=postgresql.service redis.service
 

@@ -6,8 +6,8 @@
 # Stage 3: Final minimal image
 # =============================================================================
 
-ARG NODE_IMAGE=node:24
-ARG GOLANG_IMAGE=golang:1.26.2-alpine
+ARG NODE_IMAGE=node:24-alpine
+ARG GOLANG_IMAGE=golang:1.26.3-alpine
 ARG ALPINE_IMAGE=alpine:3.21
 ARG POSTGRES_IMAGE=postgres:18-alpine
 ARG GOPROXY=https://goproxy.cn,direct
@@ -20,8 +20,8 @@ FROM ${NODE_IMAGE} AS frontend-builder
 
 WORKDIR /app/frontend
 
-# Install pnpm (pin version to avoid build-script approval issues)
-RUN npm install -g pnpm@9
+# Install pnpm (pinned to v9 to match CI and keep builds reproducible)
+RUN corepack enable && corepack prepare pnpm@9 --activate
 
 # Install dependencies first (better caching)
 COPY frontend/package.json frontend/pnpm-lock.yaml ./
@@ -84,9 +84,9 @@ FROM ${POSTGRES_IMAGE} AS pg-client
 FROM ${ALPINE_IMAGE}
 
 # Labels
-LABEL maintainer="qi758771475-gif"
+LABEL maintainer="Wei-Shaw <github.com/Wei-Shaw>"
 LABEL description="Sub2API - AI API Gateway Platform"
-LABEL org.opencontainers.image.source="https://github.com/qi758771475-gif/sub2api-main"
+LABEL org.opencontainers.image.source="https://github.com/Wei-Shaw/sub2api"
 
 # Install runtime dependencies
 RUN apk add --no-cache \
