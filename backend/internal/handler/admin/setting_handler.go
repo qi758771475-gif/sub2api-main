@@ -60,10 +60,11 @@ type SettingHandler struct {
 	opsService           *service.OpsService
 	paymentConfigService *service.PaymentConfigService
 	paymentService       *service.PaymentService
+	feishuNotifyService  *service.FeishuNotifyService
 }
 
 // NewSettingHandler 创建系统设置处理器
-func NewSettingHandler(settingService *service.SettingService, emailService *service.EmailService, turnstileService *service.TurnstileService, opsService *service.OpsService, paymentConfigService *service.PaymentConfigService, paymentService *service.PaymentService) *SettingHandler {
+func NewSettingHandler(settingService *service.SettingService, emailService *service.EmailService, turnstileService *service.TurnstileService, opsService *service.OpsService, paymentConfigService *service.PaymentConfigService, paymentService *service.PaymentService, feishuNotifyService *service.FeishuNotifyService) *SettingHandler {
 	return &SettingHandler{
 		settingService:       settingService,
 		emailService:         emailService,
@@ -71,6 +72,7 @@ func NewSettingHandler(settingService *service.SettingService, emailService *ser
 		opsService:           opsService,
 		paymentConfigService: paymentConfigService,
 		paymentService:       paymentService,
+		feishuNotifyService:  feishuNotifyService,
 	}
 }
 
@@ -249,6 +251,12 @@ func (h *SettingHandler) GetSettings(c *gin.Context) {
 
 		AffiliateEnabled:       settings.AffiliateEnabled,
 		AffiliateLinkForceBind: settings.AffiliateLinkForceBind,
+
+		FeishuNotifyEnabled:         settings.FeishuNotifyEnabled,
+		FeishuNotifyWebhookURL:      settings.FeishuNotifyWebhookURL,
+		FeishuNotifyRechargeEnabled: settings.FeishuNotifyRechargeEnabled,
+		FeishuNotifyRedeemEnabled:   settings.FeishuNotifyRedeemEnabled,
+		FeishuNotifyFields:          settings.FeishuNotifyFields,
 	}
 
 	// OpenAI fast policy (stored under a dedicated setting key)
@@ -498,6 +506,13 @@ type UpdateSettingsRequest struct {
 	// Affiliate (邀请返利) feature switch
 	AffiliateEnabled       *bool `json:"affiliate_enabled"`
 	AffiliateLinkForceBind *bool `json:"affiliate_link_force_bind"`
+
+	// Feishu webhook notification
+	FeishuNotifyEnabled         *bool     `json:"feishu_notify_enabled"`
+	FeishuNotifyWebhookURL      *string   `json:"feishu_notify_webhook_url"`
+	FeishuNotifyRechargeEnabled *bool     `json:"feishu_notify_recharge_enabled"`
+	FeishuNotifyRedeemEnabled   *bool     `json:"feishu_notify_redeem_enabled"`
+	FeishuNotifyFields          *[]string `json:"feishu_notify_fields"`
 
 	// OpenAI fast/flex policy (optional, only updated when provided)
 	OpenAIFastPolicySettings *dto.OpenAIFastPolicySettings `json:"openai_fast_policy_settings,omitempty"`
@@ -1372,6 +1387,36 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 				return *req.AffiliateLinkForceBind
 			}
 			return previousSettings.AffiliateLinkForceBind
+		}(),
+		FeishuNotifyEnabled: func() bool {
+			if req.FeishuNotifyEnabled != nil {
+				return *req.FeishuNotifyEnabled
+			}
+			return previousSettings.FeishuNotifyEnabled
+		}(),
+		FeishuNotifyWebhookURL: func() string {
+			if req.FeishuNotifyWebhookURL != nil {
+				return *req.FeishuNotifyWebhookURL
+			}
+			return previousSettings.FeishuNotifyWebhookURL
+		}(),
+		FeishuNotifyRechargeEnabled: func() bool {
+			if req.FeishuNotifyRechargeEnabled != nil {
+				return *req.FeishuNotifyRechargeEnabled
+			}
+			return previousSettings.FeishuNotifyRechargeEnabled
+		}(),
+		FeishuNotifyRedeemEnabled: func() bool {
+			if req.FeishuNotifyRedeemEnabled != nil {
+				return *req.FeishuNotifyRedeemEnabled
+			}
+			return previousSettings.FeishuNotifyRedeemEnabled
+		}(),
+		FeishuNotifyFields: func() []string {
+			if req.FeishuNotifyFields != nil {
+				return *req.FeishuNotifyFields
+			}
+			return previousSettings.FeishuNotifyFields
 		}(),
 	}
 
@@ -2810,4 +2855,19 @@ func (h *SettingHandler) TestWebSearchEmulation(c *gin.Context) {
 		return
 	}
 	response.Success(c, result)
+}
+
+// TestFeishu 发送飞书测试消息
+// POST /api/v1/admin/settings/test-feishu
+func (h *SettingHandler) TestFeishu(c *gin.Context) {
+	if h.feishuNotifyService == nil {
+		response.BadRequest(c, "feishu notify service not available")
+		return
+	}
+	err := h.feishuNotifyService.SendTestCard(c.Request.Context())
+	if err != nil {
+		response.Error(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	response.Success(c, gin.H{"message": "test message sent"})
 }

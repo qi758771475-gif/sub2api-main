@@ -17,6 +17,7 @@ import (
 	"time"
 
 	"github.com/Wei-Shaw/sub2api/internal/config"
+	"github.com/Wei-Shaw/sub2api/internal/model"
 	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
 	"github.com/imroc/req/v3"
 	"golang.org/x/sync/singleflight"
@@ -1265,6 +1266,17 @@ func (s *SettingService) buildSystemSettingsUpdates(ctx context.Context, setting
 	updates[SettingKeyAccountQuotaNotifyEnabled] = strconv.FormatBool(settings.AccountQuotaNotifyEnabled)
 	updates[SettingKeyAccountQuotaNotifyEmails] = MarshalNotifyEmails(settings.AccountQuotaNotifyEmails)
 
+	// Feishu webhook notification
+	updates[SettingKeyFeishuNotifyEnabled] = strconv.FormatBool(settings.FeishuNotifyEnabled)
+	updates[SettingKeyFeishuNotifyWebhookURL] = settings.FeishuNotifyWebhookURL
+	updates[SettingKeyFeishuNotifyRechargeEnabled] = strconv.FormatBool(settings.FeishuNotifyRechargeEnabled)
+	updates[SettingKeyFeishuNotifyRedeemEnabled] = strconv.FormatBool(settings.FeishuNotifyRedeemEnabled)
+	feishuFieldsJSON, err := json.Marshal(settings.FeishuNotifyFields)
+	if err != nil {
+		return nil, fmt.Errorf("marshal feishu notify fields: %w", err)
+	}
+	updates[SettingKeyFeishuNotifyFields] = string(feishuFieldsJSON)
+
 	return updates, nil
 }
 
@@ -2303,6 +2315,21 @@ func (s *SettingService) parseSettings(settings map[string]string) *SystemSettin
 	}
 	if result.AccountQuotaNotifyEmails == nil {
 		result.AccountQuotaNotifyEmails = []NotifyEmailEntry{}
+	}
+
+	// Feishu notify settings
+	result.FeishuNotifyEnabled = settings[SettingKeyFeishuNotifyEnabled] == "true"
+	result.FeishuNotifyWebhookURL = settings[SettingKeyFeishuNotifyWebhookURL]
+	result.FeishuNotifyRechargeEnabled = settings[SettingKeyFeishuNotifyRechargeEnabled] != "false"
+	result.FeishuNotifyRedeemEnabled = settings[SettingKeyFeishuNotifyRedeemEnabled] != "false"
+	if raw := settings[SettingKeyFeishuNotifyFields]; raw != "" {
+		var fields []string
+		if err := json.Unmarshal([]byte(raw), &fields); err == nil && len(fields) > 0 {
+			result.FeishuNotifyFields = fields
+		}
+	}
+	if len(result.FeishuNotifyFields) == 0 {
+		result.FeishuNotifyFields = model.DefaultFeishuNotifyFields()
 	}
 
 	return result

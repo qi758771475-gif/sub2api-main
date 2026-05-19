@@ -12,6 +12,7 @@ import (
 	"time"
 
 	dbent "github.com/Wei-Shaw/sub2api/ent"
+	"github.com/Wei-Shaw/sub2api/internal/model"
 	"github.com/Wei-Shaw/sub2api/ent/paymentauditlog"
 	"github.com/Wei-Shaw/sub2api/ent/paymentorder"
 	"github.com/Wei-Shaw/sub2api/internal/payment"
@@ -273,7 +274,11 @@ func (s *PaymentService) doBalance(ctx context.Context, o *dbent.PaymentOrder) e
 			return err
 		}
 		// Code already created and redeemed — just mark completed
-		return s.markCompleted(ctx, o, "RECHARGE_SUCCESS")
+		if err := s.markCompleted(ctx, o, "RECHARGE_SUCCESS"); err != nil {
+			return err
+		}
+		s.sendFeishuRechargeNotify(ctx, o)
+		return nil
 	case redeemActionCreate:
 		rc := &RedeemCode{Code: o.RechargeCode, Type: RedeemTypeBalance, Value: o.Amount, Status: StatusUnused}
 		if err := s.redeemService.CreateCode(ctx, rc); err != nil {
@@ -288,7 +293,11 @@ func (s *PaymentService) doBalance(ctx context.Context, o *dbent.PaymentOrder) e
 	if err := s.applyAffiliateRebateForOrder(ctx, o); err != nil {
 		return err
 	}
-	return s.markCompleted(ctx, o, "RECHARGE_SUCCESS")
+	if err := s.markCompleted(ctx, o, "RECHARGE_SUCCESS"); err != nil {
+		return err
+	}
+	s.sendFeishuRechargeNotify(ctx, o)
+	return nil
 }
 
 func (s *PaymentService) markCompleted(ctx context.Context, o *dbent.PaymentOrder, auditAction string) error {
@@ -544,4 +553,41 @@ func (s *PaymentService) RetryFulfillment(ctx context.Context, oid int64) error 
 	}
 	s.writeAuditLog(ctx, oid, "RECHARGE_RETRY", "admin", map[string]any{"detail": "admin manual retry"})
 	return s.executeFulfillment(ctx, oid)
+}
+
+func (s *PaymentService) sendFeishuRechargeNotify(ctx context.Context, o *dbent.PaymentOrder) {
+	if s.feishuNotify == nil {
+		return
+	}
+	user, err := s.entClient.User.Get(ctx, o.UserID)
+	if err != nil {
+		return
+	}
+	event := model.RechargeEvent{
+		UserID:         user.ID,
+		UserEmail:      user.Email,
+		UserName:       user.Username,
+		Amount:         o.Amount,
+		CreditedAmount: o.Amount,
+		Method:         "直冲",
+		MethodDetail:   s.resolveProviderDisplayName(o),
+		OrderNo:        o.OutTradeNo,
+		Time:           time.Now().Format(time.RFC3339),
+	}
+	go s.feishuNotify.Send(event)
+}
+
+func (s *PaymentService) resolveProviderDisplayName(o *dbent.PaymentOrder) string {
+	switch strings.ToLower(o.PaymentType) {
+	case "alipay":
+		return "支付宝"
+	case "wxpay", "wechat":
+		return "微信支付"
+	case "stripe":
+		return "Stripe"
+	case "easypay":
+		return "易支付"
+	default:
+		return o.PaymentType
+	}
 }

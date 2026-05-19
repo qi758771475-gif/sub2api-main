@@ -10,6 +10,7 @@ import (
 	"time"
 
 	dbent "github.com/Wei-Shaw/sub2api/ent"
+	"github.com/Wei-Shaw/sub2api/internal/model"
 	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/pagination"
 )
@@ -80,6 +81,7 @@ type RedeemService struct {
 	billingCacheService  *BillingCacheService
 	entClient            *dbent.Client
 	authCacheInvalidator APIKeyAuthCacheInvalidator
+	feishuNotify         *FeishuNotifyService
 }
 
 // NewRedeemService 创建兑换码服务实例
@@ -91,6 +93,7 @@ func NewRedeemService(
 	billingCacheService *BillingCacheService,
 	entClient *dbent.Client,
 	authCacheInvalidator APIKeyAuthCacheInvalidator,
+	feishuNotify *FeishuNotifyService,
 ) *RedeemService {
 	return &RedeemService{
 		redeemRepo:           redeemRepo,
@@ -100,6 +103,7 @@ func NewRedeemService(
 		billingCacheService:  billingCacheService,
 		entClient:            entClient,
 		authCacheInvalidator: authCacheInvalidator,
+		feishuNotify:         feishuNotify,
 	}
 }
 
@@ -368,6 +372,22 @@ func (s *RedeemService) Redeem(ctx context.Context, userID int64, code string) (
 
 	// 事务提交成功后失效缓存
 	s.invalidateRedeemCaches(ctx, userID, redeemCode)
+
+	// Send feishu notification for balance redeem (async, best-effort)
+	if redeemCode.Type == RedeemTypeBalance && redeemCode.Value > 0 && s.feishuNotify != nil {
+		event := model.RechargeEvent{
+			UserID:         user.ID,
+			UserEmail:      user.Email,
+			UserName:       user.Username,
+			Amount:         redeemCode.Value,
+			CreditedAmount: redeemCode.Value,
+			Method:         "兑换",
+			MethodDetail:   "兑换码",
+			OrderNo:        redeemCode.Code,
+			Time:           time.Now().Format(time.RFC3339),
+		}
+		go s.feishuNotify.Send(event)
+	}
 
 	// 重新获取更新后的兑换码
 	redeemCode, err = s.redeemRepo.GetByID(ctx, redeemCode.ID)
