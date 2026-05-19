@@ -5558,88 +5558,132 @@
         <!-- /Tab: Email -->
 
         <!-- Tab: Notification -->
+        <!-- Notification Tab -->
         <div v-show="activeTab === 'notification'" class="space-y-6">
-          <div class="settings-card">
-            <div class="settings-card-header">
-              <h3>{{ t("admin.settings.notification.enabled") }}</h3>
-              <p class="settings-card-hint">{{ t("admin.settings.notification.enabledHint") }}</p>
-            </div>
-            <div class="settings-card-body">
-              <Toggle v-model="form.feishu_notify_enabled" />
-            </div>
-          </div>
-
-          <div class="settings-card">
-            <div class="settings-card-header">
-              <h3>{{ t("admin.settings.notification.webhookUrl") }}</h3>
-            </div>
-            <div class="settings-card-body">
-              <div class="flex gap-2">
-                <input
-                  v-model="form.feishu_notify_webhook_url"
-                  type="url"
-                  class="form-input flex-1"
-                  :placeholder="t('admin.settings.notification.webhookUrlPlaceholder')"
-                />
-                <button
-                  class="btn btn-secondary"
-                  :disabled="testingFeishu || !form.feishu_notify_webhook_url"
-                  @click="testFeishuWebhook"
-                >
-                  <span v-if="testingFeishu">...</span>
-                  <span v-else>{{ t("admin.settings.notification.testSend") }}</span>
-                </button>
-              </div>
-              <p
-                v-if="feishuTestResult"
-                :class="feishuTestResult.success ? 'text-green-600' : 'text-red-600'"
-                class="text-sm mt-2"
-              >
-                {{ feishuTestResult.message }}
+          <!-- Enable Toggle -->
+          <div class="card">
+            <div class="border-b border-gray-100 px-6 py-4 dark:border-dark-700">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                {{ t("admin.settings.notification.enabled") }}
+              </h2>
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                {{ t("admin.settings.notification.enabledHint") }}
               </p>
             </div>
-          </div>
-
-          <div class="settings-card">
-            <div class="settings-card-header">
-              <h3>{{ t("admin.settings.notification.events") }}</h3>
-            </div>
-            <div class="settings-card-body space-y-4">
+            <div class="space-y-5 p-6">
               <div class="flex items-center justify-between">
                 <div>
-                  <p>{{ t("admin.settings.notification.rechargeEnabled") }}</p>
-                  <p class="settings-card-hint">{{ t("admin.settings.notification.rechargeEnabledHint") }}</p>
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {{ t("admin.settings.notification.enabled") }}
+                  </label>
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                    {{ t("admin.settings.notification.enabledHint") }}
+                  </p>
+                </div>
+                <Toggle v-model="form.feishu_notify_enabled" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Webhook URL -->
+          <div v-if="form.feishu_notify_enabled" class="card">
+            <div class="border-b border-gray-100 px-6 py-4 dark:border-dark-700">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                {{ t("admin.settings.notification.webhookUrl") }}
+              </h2>
+            </div>
+            <div class="space-y-5 p-6">
+              <div>
+                <div class="flex gap-2">
+                  <input
+                    v-model="form.feishu_notify_webhook_url"
+                    type="url"
+                    class="input flex-1"
+                    :placeholder="t('admin.settings.notification.webhookUrlPlaceholder')"
+                  />
+                  <button
+                    type="button"
+                    class="btn btn-secondary btn-sm"
+                    :disabled="testingFeishu || !form.feishu_notify_webhook_url"
+                    @click="testFeishuWebhook"
+                  >
+                    <svg
+                      v-if="testingFeishu"
+                      class="h-4 w-4 animate-spin"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    {{ testingFeishu ? "..." : t("admin.settings.notification.testSend") }}
+                  </button>
+                </div>
+                <p
+                  v-if="feishuTestResult"
+                  :class="feishuTestResult.success ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'"
+                  class="mt-2 text-sm"
+                >
+                  {{ feishuTestResult.message }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Event Toggles -->
+          <div v-if="form.feishu_notify_enabled" class="card">
+            <div class="border-b border-gray-100 px-6 py-4 dark:border-dark-700">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                {{ t("admin.settings.notification.events") }}
+              </h2>
+            </div>
+            <div class="space-y-5 p-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {{ t("admin.settings.notification.rechargeEnabled") }}
+                  </label>
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                    {{ t("admin.settings.notification.rechargeEnabledHint") }}
+                  </p>
                 </div>
                 <Toggle v-model="form.feishu_notify_recharge_enabled" />
               </div>
               <div class="flex items-center justify-between">
                 <div>
-                  <p>{{ t("admin.settings.notification.redeemEnabled") }}</p>
-                  <p class="settings-card-hint">{{ t("admin.settings.notification.redeemEnabledHint") }}</p>
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {{ t("admin.settings.notification.redeemEnabled") }}
+                  </label>
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                    {{ t("admin.settings.notification.redeemEnabledHint") }}
+                  </p>
                 </div>
                 <Toggle v-model="form.feishu_notify_redeem_enabled" />
               </div>
             </div>
           </div>
 
-          <div class="settings-card">
-            <div class="settings-card-header">
-              <h3>{{ t("admin.settings.notification.fields") }}</h3>
+          <!-- Field Selection -->
+          <div v-if="form.feishu_notify_enabled" class="card">
+            <div class="border-b border-gray-100 px-6 py-4 dark:border-dark-700">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                {{ t("admin.settings.notification.fields") }}
+              </h2>
             </div>
-            <div class="settings-card-body">
-              <div class="grid grid-cols-3 gap-3">
+            <div class="space-y-5 p-6">
+              <div class="grid grid-cols-2 gap-3 md:grid-cols-3">
                 <label
                   v-for="field in feishuFieldOptions"
                   :key="field.key"
-                  class="flex items-center gap-2 cursor-pointer"
+                  class="flex items-center gap-2 cursor-pointer text-sm text-gray-700 dark:text-gray-300"
                 >
                   <input
                     type="checkbox"
                     :checked="form.feishu_notify_fields.includes(field.key)"
-                    class="checkbox"
+                    class="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:border-dark-600 dark:bg-dark-800"
                     @change="toggleFeishuField(field.key)"
                   />
-                  <span class="text-sm">{{ localText(field.labelZh, field.labelEn) }}</span>
+                  {{ localText(field.labelZh, field.labelEn) }}
                 </label>
               </div>
             </div>

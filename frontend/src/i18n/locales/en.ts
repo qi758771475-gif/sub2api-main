@@ -4849,6 +4849,7 @@ export default {
         email: 'Email',
         backup: 'Backup',
         payment: 'Payment',
+        notification: 'Notifications',
       },
       features: {
         channelMonitor: {
