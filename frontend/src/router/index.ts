@@ -653,6 +653,19 @@ const routes: RouteRecordRaw[] = [
     }
   },
 
+  // ==================== Docs Route ====================
+  {
+    path: '/docs',
+    name: 'Docs',
+    component: () => import('@/views/DocsView.vue'),
+    meta: {
+      requiresAuth: false,
+      requiresAdmin: false,
+      title: 'Docs',
+      titleKey: 'docsGuide.title'
+    }
+  },
+
   // ==================== 404 Not Found ====================
   {
     path: '/:pathMatch(.*)*',

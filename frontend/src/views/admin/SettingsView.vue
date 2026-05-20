@@ -5174,6 +5174,20 @@
                 </p>
               </div>
 
+              <hr class="border-gray-200 dark:border-dark-600" />
+
+              <div class="flex items-center justify-between">
+                <div>
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {{ t('admin.settings.features.affiliate.linkForceBind') }}
+                  </label>
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                    {{ t('admin.settings.features.affiliate.linkForceBindHint') }}
+                  </p>
+                </div>
+                <Toggle v-model="form.affiliate_link_force_bind" />
+              </div>
+
               <!-- 专属用户管理 -->
               <div class="border-t border-gray-100 pt-6 dark:border-dark-700">
                 <div class="mb-3 flex items-center justify-between">
@@ -5940,6 +5954,35 @@
             @toggle-type="handleToggleType"
             @reorder="handleReorderProviders"
           />
+
+          <!-- Purchase Subscription iframe入口 -->
+          <div class="border-t border-gray-100 pt-6 dark:border-dark-700">
+            <div class="flex items-center justify-between">
+              <div>
+                <label class="font-medium text-gray-900 dark:text-white">{{
+                  t("admin.settings.payment.purchaseSubscriptionEnabled")
+                }}</label>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  {{ t("admin.settings.payment.purchaseSubscriptionEnabledHint") }}
+                </p>
+              </div>
+              <Toggle v-model="form.purchase_subscription_enabled" />
+            </div>
+            <div v-if="form.purchase_subscription_enabled">
+              <label class="input-label">{{
+                t("admin.settings.payment.purchaseSubscriptionUrl")
+              }}</label>
+              <input
+                v-model="form.purchase_subscription_url"
+                type="url"
+                class="input"
+                placeholder="https://pay.ldxp.cn/shop/9A7SXIWP"
+              />
+              <p class="mt-1 text-xs text-gray-400 dark:text-dark-500">
+                {{ t("admin.settings.payment.purchaseSubscriptionUrlHint") }}
+              </p>
+            </div>
+          </div>
         </div>
 
         <div v-show="activeTab === 'email'" class="space-y-6">
@@ -7065,11 +7108,14 @@ const form = reactive<SettingsForm>({
   available_channels_enabled: false,
   // Affiliate (邀请返利) feature switch
   affiliate_enabled: false,
+  affiliate_link_force_bind: false,
   feishu_notify_enabled: false,
   feishu_notify_webhook_url: "",
   feishu_notify_recharge_enabled: true,
   feishu_notify_redeem_enabled: true,
   feishu_notify_fields: ["user_email", "user_name", "amount", "credited_amount", "method", "method_detail", "order_no", "time"],
+  purchase_subscription_enabled: false,
+  purchase_subscription_url: "https://pay.ldxp.cn/shop/9A7SXIWP",
 });
 
 const authSourceDefaults = reactive<AuthSourceDefaultsState>(
@@ -8203,11 +8249,14 @@ async function saveSettings() {
       available_channels_enabled: form.available_channels_enabled,
       // Affiliate (邀请返利) feature switch
       affiliate_enabled: form.affiliate_enabled,
+      affiliate_link_force_bind: form.affiliate_link_force_bind,
       feishu_notify_enabled: form.feishu_notify_enabled,
       feishu_notify_webhook_url: form.feishu_notify_webhook_url,
       feishu_notify_recharge_enabled: form.feishu_notify_recharge_enabled,
       feishu_notify_redeem_enabled: form.feishu_notify_redeem_enabled,
       feishu_notify_fields: form.feishu_notify_fields,
+      purchase_subscription_enabled: form.purchase_subscription_enabled,
+      purchase_subscription_url: form.purchase_subscription_url || "",
     };
 
     // 仅当 openai_fast_policy_settings 已成功从后端加载时才回写，

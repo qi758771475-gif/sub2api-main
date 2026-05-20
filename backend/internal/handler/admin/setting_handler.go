@@ -286,7 +286,8 @@ func (h *SettingHandler) GetSettings(c *gin.Context) {
 
 		AvailableChannelsEnabled: settings.AvailableChannelsEnabled,
 
-		AffiliateEnabled: settings.AffiliateEnabled,
+		AffiliateEnabled:       settings.AffiliateEnabled,
+		AffiliateLinkForceBind: settings.AffiliateLinkForceBind,
 	}
 
 	// OpenAI fast policy (stored under a dedicated setting key)
@@ -613,7 +614,8 @@ type UpdateSettingsRequest struct {
 	AvailableChannelsEnabled *bool `json:"available_channels_enabled"`
 
 	// Affiliate (邀请返利) feature switch
-	AffiliateEnabled *bool `json:"affiliate_enabled"`
+	AffiliateEnabled       *bool `json:"affiliate_enabled"`
+	AffiliateLinkForceBind *bool `json:"affiliate_link_force_bind"`
 
 	// 风控中心功能开关
 	RiskControlEnabled *bool `json:"risk_control_enabled"`
@@ -1679,6 +1681,12 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 			}
 			return previousSettings.AffiliateEnabled
 		}(),
+		AffiliateLinkForceBind: func() bool {
+			if req.AffiliateLinkForceBind != nil {
+				return *req.AffiliateLinkForceBind
+			}
+			return previousSettings.AffiliateLinkForceBind
+		}(),
 		RiskControlEnabled: func() bool {
 			if req.RiskControlEnabled != nil {
 				return *req.RiskControlEnabled
@@ -1989,7 +1997,8 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 
 		AvailableChannelsEnabled: updatedSettings.AvailableChannelsEnabled,
 
-		AffiliateEnabled: updatedSettings.AffiliateEnabled,
+		AffiliateEnabled:       updatedSettings.AffiliateEnabled,
+		AffiliateLinkForceBind: updatedSettings.AffiliateLinkForceBind,
 
 		RiskControlEnabled: updatedSettings.RiskControlEnabled,
 	}
@@ -2448,6 +2457,9 @@ func diffSettings(before *service.SystemSettings, after *service.SystemSettings,
 	}
 	if before.AffiliateEnabled != after.AffiliateEnabled {
 		changed = append(changed, "affiliate_enabled")
+	}
+	if before.AffiliateLinkForceBind != after.AffiliateLinkForceBind {
+		changed = append(changed, "affiliate_link_force_bind")
 	}
 	if before.RiskControlEnabled != after.RiskControlEnabled {
 		changed = append(changed, "risk_control_enabled")
