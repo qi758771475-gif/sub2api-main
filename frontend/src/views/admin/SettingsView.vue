@@ -6633,6 +6633,7 @@ const settingsTabs = [
   { key: "gateway" as SettingsTab, icon: "server" as const },
   { key: "payment" as SettingsTab, icon: "creditCard" as const },
   { key: "email" as SettingsTab, icon: "mail" as const },
+  { key: "notification" as SettingsTab, icon: "bell" as const },
   { key: "backup" as SettingsTab, icon: "database" as const },
 ];
 
