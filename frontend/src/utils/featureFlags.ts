@@ -114,6 +114,12 @@ export const FeatureFlags = {
     mode: 'opt-in',
     label: 'Risk Control',
   }),
+  purchaseSubscription: defineFlag({
+    key: 'purchase_subscription_enabled',
+    mode: 'opt-in',
+    label: 'Purchase Subscription',
+  }),
+
   affiliate: defineFlag({
     key: 'affiliate_enabled',
     mode: 'opt-in',

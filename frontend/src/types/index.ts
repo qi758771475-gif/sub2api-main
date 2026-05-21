@@ -233,6 +233,8 @@ export interface PublicSettings {
   channel_monitor_default_interval_seconds: number
   available_channels_enabled: boolean
   affiliate_enabled: boolean
+  purchase_subscription_enabled: boolean
+  purchase_subscription_url: string
 }
 
 export interface AuthResponse {

@@ -373,6 +373,7 @@ export default {
     mySubscriptions: '我的订阅',
     buySubscription: '充值/订阅',
     docs: '文档',
+    purchaseShop: '外部充值',
     docsGuide: '配置教程',
     myOrders: '我的订单',
     orderManagement: '订单管理',
