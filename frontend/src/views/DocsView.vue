@@ -16,15 +16,6 @@
     <div class="bg-white dark:bg-[#0d0d1a] border-b border-slate-200 dark:border-cyan-500/20 relative overflow-hidden">
       <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400 to-purple-500 hidden dark:block"></div>
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <button
-          @click="$router.back()"
-          class="inline-flex items-center gap-1.5 mb-6 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-cyan-500/30 rounded-lg text-sm text-slate-600 dark:text-slate-300 shadow-sm hover:border-blue-500 dark:hover:border-cyan-400 transition-colors"
-        >
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-          </svg>
-          {{ locale === 'zh' ? '返回' : 'Back' }}
-        </button>
         <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">
           {{ t('docsGuide.title') }}
         </h1>
@@ -207,6 +198,18 @@
         </div>
       </section>
     </div>
+
+    <!-- Floating back button - fixed right-center -->
+    <button
+      @click="$router.back()"
+      class="fixed right-6 top-1/2 -translate-y-1/2 z-50 flex items-center gap-2 px-5 py-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-cyan-500/30 rounded-xl shadow-lg hover:shadow-xl hover:border-blue-500 dark:hover:border-cyan-400 transition-all group"
+      :title="locale === 'zh' ? '返回' : 'Back'"
+    >
+      <svg class="w-6 h-6 text-slate-500 dark:text-slate-300 group-hover:text-blue-500 dark:group-hover:text-cyan-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+      </svg>
+      <span class="text-base font-medium text-slate-600 dark:text-slate-300 group-hover:text-blue-500 dark:group-hover:text-cyan-400 transition-colors">{{ locale === 'zh' ? '返回' : 'Back' }}</span>
+    </button>
   </div>
 </template>
 
