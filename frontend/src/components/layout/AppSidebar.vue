@@ -383,6 +383,17 @@ const CreditCardIcon = {
     )
 }
 
+const BookOpenIcon = {
+  markup: {
+    tag: 'svg',
+    attrs: { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '2' },
+    children: [
+      { tag: 'path', attrs: { d: 'M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z' } },
+      { tag: 'path', attrs: { d: 'M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z' } }
+    ]
+  }
+};
+
 const RechargeSubscriptionIcon = {
   render: () =>
     h(
@@ -689,6 +700,7 @@ function buildSelfNavItems(withDashboard: boolean): NavItem[] {
     { path: '/redeem', label: t('nav.redeem'), icon: GiftIcon, hideInSimpleMode: true },
     { path: '/affiliate', label: t('nav.affiliate'), icon: UsersIcon, hideInSimpleMode: true, featureFlag: flagAffiliate },
     { path: '/profile', label: t('nav.profile'), icon: UserIcon },
+    { path: '/docs', label: t('nav.docsGuide'), icon: BookOpenIcon },
     ...customMenuItemsForUser.value.map((item): NavItem => ({
       path: `/custom/${item.id}`,
       label: item.label,

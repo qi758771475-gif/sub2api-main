@@ -286,6 +286,13 @@ func (h *SettingHandler) GetSettings(c *gin.Context) {
 
 		AvailableChannelsEnabled: settings.AvailableChannelsEnabled,
 
+		// Feishu webhook notification
+		FeishuNotifyEnabled:         settings.FeishuNotifyEnabled,
+		FeishuNotifyWebhookURL:      settings.FeishuNotifyWebhookURL,
+		FeishuNotifyRechargeEnabled: settings.FeishuNotifyRechargeEnabled,
+		FeishuNotifyRedeemEnabled:   settings.FeishuNotifyRedeemEnabled,
+		FeishuNotifyFields:          settings.FeishuNotifyFields,
+
 		AffiliateEnabled:       settings.AffiliateEnabled,
 		AffiliateLinkForceBind: settings.AffiliateLinkForceBind,
 	}
@@ -616,6 +623,13 @@ type UpdateSettingsRequest struct {
 	// Affiliate (邀请返利) feature switch
 	AffiliateEnabled       *bool `json:"affiliate_enabled"`
 	AffiliateLinkForceBind *bool `json:"affiliate_link_force_bind"`
+
+	// Feishu webhook notification
+	FeishuNotifyEnabled         *bool     `json:"feishu_notify_enabled"`
+	FeishuNotifyWebhookURL      *string   `json:"feishu_notify_webhook_url"`
+	FeishuNotifyRechargeEnabled *bool     `json:"feishu_notify_recharge_enabled"`
+	FeishuNotifyRedeemEnabled   *bool     `json:"feishu_notify_redeem_enabled"`
+	FeishuNotifyFields          *[]string `json:"feishu_notify_fields"`
 
 	// 风控中心功能开关
 	RiskControlEnabled *bool `json:"risk_control_enabled"`
@@ -1687,6 +1701,37 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 			}
 			return previousSettings.AffiliateLinkForceBind
 		}(),
+		// Feishu webhook notification
+		FeishuNotifyEnabled: func() bool {
+			if req.FeishuNotifyEnabled != nil {
+				return *req.FeishuNotifyEnabled
+			}
+			return previousSettings.FeishuNotifyEnabled
+		}(),
+		FeishuNotifyWebhookURL: func() string {
+			if req.FeishuNotifyWebhookURL != nil {
+				return *req.FeishuNotifyWebhookURL
+			}
+			return previousSettings.FeishuNotifyWebhookURL
+		}(),
+		FeishuNotifyRechargeEnabled: func() bool {
+			if req.FeishuNotifyRechargeEnabled != nil {
+				return *req.FeishuNotifyRechargeEnabled
+			}
+			return previousSettings.FeishuNotifyRechargeEnabled
+		}(),
+		FeishuNotifyRedeemEnabled: func() bool {
+			if req.FeishuNotifyRedeemEnabled != nil {
+				return *req.FeishuNotifyRedeemEnabled
+			}
+			return previousSettings.FeishuNotifyRedeemEnabled
+		}(),
+		FeishuNotifyFields: func() []string {
+			if req.FeishuNotifyFields != nil {
+				return *req.FeishuNotifyFields
+			}
+			return previousSettings.FeishuNotifyFields
+		}(),
 		RiskControlEnabled: func() bool {
 			if req.RiskControlEnabled != nil {
 				return *req.RiskControlEnabled
@@ -1999,6 +2044,12 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 
 		AffiliateEnabled:       updatedSettings.AffiliateEnabled,
 		AffiliateLinkForceBind: updatedSettings.AffiliateLinkForceBind,
+
+		FeishuNotifyEnabled:         updatedSettings.FeishuNotifyEnabled,
+		FeishuNotifyWebhookURL:      updatedSettings.FeishuNotifyWebhookURL,
+		FeishuNotifyRechargeEnabled: updatedSettings.FeishuNotifyRechargeEnabled,
+		FeishuNotifyRedeemEnabled:   updatedSettings.FeishuNotifyRedeemEnabled,
+		FeishuNotifyFields:          updatedSettings.FeishuNotifyFields,
 
 		RiskControlEnabled: updatedSettings.RiskControlEnabled,
 	}
