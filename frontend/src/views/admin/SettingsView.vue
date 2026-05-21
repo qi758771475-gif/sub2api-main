@@ -229,10 +229,10 @@
               <template v-else>
                 <div class="flex items-center justify-between">
                   <div>
-                    <label class="font-medium text-gray-900 dark:text-white">{{
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
                       t("admin.settings.overloadCooldown.enabled")
                     }}</label>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                    <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.overloadCooldown.enabledHint") }}
                     </p>
                   </div>
@@ -330,10 +330,10 @@
               <template v-else>
                 <div class="flex items-center justify-between">
                   <div>
-                    <label class="font-medium text-gray-900 dark:text-white">{{
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
                       t("admin.settings.rateLimit429Cooldown.enabled")
                     }}</label>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                    <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.rateLimit429Cooldown.enabledHint") }}
                     </p>
                   </div>
@@ -439,10 +439,10 @@
                 <!-- Enable Stream Timeout -->
                 <div class="flex items-center justify-between">
                   <div>
-                    <label class="font-medium text-gray-900 dark:text-white">{{
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
                       t("admin.settings.streamTimeout.enabled")
                     }}</label>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                    <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.streamTimeout.enabledHint") }}
                     </p>
                   </div>
@@ -619,10 +619,10 @@
                 <!-- Master Toggle -->
                 <div class="flex items-center justify-between">
                   <div>
-                    <label class="font-medium text-gray-900 dark:text-white">{{
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
                       t("admin.settings.rectifier.enabled")
                     }}</label>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                    <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.rectifier.enabledHint") }}
                     </p>
                   </div>
@@ -1369,10 +1369,10 @@
               <!-- Enable Registration -->
               <div class="flex items-center justify-between">
                 <div>
-                  <label class="font-medium text-gray-900 dark:text-white">{{
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
                     t("admin.settings.registration.enableRegistration")
                   }}</label>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                     {{
                       t("admin.settings.registration.enableRegistrationHint")
                     }}
@@ -1386,10 +1386,10 @@
                 class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div>
-                  <label class="font-medium text-gray-900 dark:text-white">{{
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
                     t("admin.settings.registration.emailVerification")
                   }}</label>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.registration.emailVerificationHint") }}
                   </p>
                 </div>
@@ -1398,7 +1398,7 @@
 
               <!-- Email Suffix Whitelist -->
               <div class="border-t border-gray-100 pt-4 dark:border-dark-700">
-                <label class="font-medium text-gray-900 dark:text-white">{{
+                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
                   t("admin.settings.registration.emailSuffixWhitelist")
                 }}</label>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -1475,10 +1475,10 @@
                 class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div>
-                  <label class="font-medium text-gray-900 dark:text-white">{{
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
                     t("admin.settings.registration.promoCode")
                   }}</label>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.registration.promoCodeHint") }}
                   </p>
                 </div>
@@ -1490,10 +1490,10 @@
                 class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div>
-                  <label class="font-medium text-gray-900 dark:text-white">{{
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
                     t("admin.settings.registration.invitationCode")
                   }}</label>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.registration.invitationCodeHint") }}
                   </p>
                 </div>
@@ -1505,10 +1505,10 @@
                 class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div>
-                  <label class="font-medium text-gray-900 dark:text-white">{{
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
                     t("admin.settings.registration.passwordReset")
                   }}</label>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.registration.passwordResetHint") }}
                   </p>
                 </div>
@@ -1542,10 +1542,10 @@
                 class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div>
-                  <label class="font-medium text-gray-900 dark:text-white">{{
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
                     t("admin.settings.registration.totp")
                   }}</label>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.registration.totpHint") }}
                   </p>
                   <!-- Warning when encryption key not configured -->
@@ -1580,10 +1580,10 @@
               <!-- Enable Turnstile -->
               <div class="flex items-center justify-between">
                 <div>
-                  <label class="font-medium text-gray-900 dark:text-white">{{
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
                     t("admin.settings.turnstile.enableTurnstile")
                   }}</label>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.turnstile.enableTurnstileHint") }}
                   </p>
                 </div>
@@ -1662,10 +1662,10 @@
             <div class="space-y-5 p-6">
               <div class="flex items-center justify-between">
                 <div>
-                  <label class="font-medium text-gray-900 dark:text-white">{{
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
                     t("admin.settings.linuxdo.enable")
                   }}</label>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.linuxdo.enableHint") }}
                   </p>
                 </div>
@@ -1787,7 +1787,7 @@
                 <div class="rounded-lg border border-gray-200 p-4 dark:border-dark-700">
                   <div class="flex items-start justify-between gap-4">
                     <div>
-                      <h3 class="font-medium text-gray-900 dark:text-white">
+                      <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">
                         GitHub
                       </h3>
                       <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -1897,7 +1897,7 @@
                 <div class="rounded-lg border border-gray-200 p-4 dark:border-dark-700">
                   <div class="flex items-start justify-between gap-4">
                     <div>
-                      <h3 class="font-medium text-gray-900 dark:text-white">
+                      <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">
                         Google
                       </h3>
                       <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -2006,10 +2006,10 @@
             <div class="space-y-5 p-6">
               <div class="flex items-center justify-between">
                 <div>
-                  <label class="font-medium text-gray-900 dark:text-white">{{
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
                     t("admin.settings.wechatConnect.enabledLabel")
                   }}</label>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.wechatConnect.enabledHint") }}
                   </p>
                 </div>
@@ -2029,7 +2029,7 @@
                   >
                     <div class="flex items-start justify-between gap-4">
                       <div>
-                        <h3 class="font-medium text-gray-900 dark:text-white">
+                        <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">
                           {{ localText("PC 应用", "PC App") }}
                         </h3>
                         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -2102,7 +2102,7 @@
                   >
                     <div class="flex items-start justify-between gap-4">
                       <div>
-                        <h3 class="font-medium text-gray-900 dark:text-white">
+                        <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">
                           {{ localText("公众号", "Official Account") }}
                         </h3>
                         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -2180,7 +2180,7 @@
                   >
                     <div class="flex items-start justify-between gap-4">
                       <div>
-                        <h3 class="font-medium text-gray-900 dark:text-white">
+                        <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">
                           {{ localText("移动应用", "Mobile App") }}
                         </h3>
                         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -2348,10 +2348,10 @@
             <div class="space-y-5 p-6">
               <div class="flex items-center justify-between">
                 <div>
-                  <label class="font-medium text-gray-900 dark:text-white">{{
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
                     t("admin.settings.dingtalk.enable")
                   }}</label>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.dingtalk.enableHint") }}
                   </p>
                 </div>
@@ -2470,10 +2470,10 @@
                     class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-dark-700"
                   >
                     <div>
-                      <label class="font-medium text-gray-900 dark:text-white">{{
+                      <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
                         t("admin.settings.dingtalk.bypassRegistration")
                       }}</label>
-                      <p class="text-sm text-gray-500 dark:text-gray-400">
+                      <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                         {{ t("admin.settings.dingtalk.bypassRegistrationHint") }}
                       </p>
                     </div>
@@ -2487,10 +2487,10 @@
                   >
                     <div class="flex items-center justify-between">
                       <div>
-                        <label class="font-medium text-gray-900 dark:text-white">{{
+                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
                           t("admin.settings.dingtalk.syncDisplayName")
                         }}</label>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                        <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                           {{ t("admin.settings.dingtalk.syncDisplayNameHint") }}
                         </p>
                       </div>
@@ -2530,10 +2530,10 @@
                   >
                     <div class="flex items-center justify-between">
                       <div>
-                        <label class="font-medium text-gray-900 dark:text-white">{{
+                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
                           t("admin.settings.dingtalk.syncCorpEmail")
                         }}</label>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                        <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                           {{ t("admin.settings.dingtalk.syncCorpEmailHint") }}
                         </p>
                         <p class="text-xs text-amber-600 dark:text-amber-400 mt-1">
@@ -2576,10 +2576,10 @@
                   >
                     <div class="flex items-center justify-between">
                       <div>
-                        <label class="font-medium text-gray-900 dark:text-white">{{
+                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
                           t("admin.settings.dingtalk.syncDept")
                         }}</label>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                        <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                           {{ t("admin.settings.dingtalk.syncDeptHint") }}
                         </p>
                         <p class="text-xs text-amber-600 dark:text-amber-400 mt-1">
@@ -2636,10 +2636,10 @@
             <div class="space-y-5 p-6">
               <div class="flex items-center justify-between">
                 <div>
-                  <label class="font-medium text-gray-900 dark:text-white">{{
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
                     t("admin.settings.oidc.enable")
                   }}</label>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.oidc.enableHint") }}
                   </p>
                 </div>
@@ -2939,7 +2939,7 @@
                     class="flex items-center justify-between rounded border border-gray-200 px-4 py-3 dark:border-dark-700"
                   >
                     <div>
-                      <label class="font-medium text-gray-900 dark:text-white">
+                      <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                         {{ t("admin.settings.oidc.usePkce") }}
                       </label>
                     </div>
@@ -2953,7 +2953,7 @@
                     class="flex items-center justify-between rounded border border-gray-200 px-4 py-3 dark:border-dark-700"
                   >
                     <div>
-                      <label class="font-medium text-gray-900 dark:text-white">
+                      <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                         {{ t("admin.settings.oidc.validateIdToken") }}
                       </label>
                     </div>
@@ -2967,7 +2967,7 @@
                     class="flex items-center justify-between rounded border border-gray-200 px-4 py-3 dark:border-dark-700"
                   >
                     <div>
-                      <label class="font-medium text-gray-900 dark:text-white">
+                      <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                         {{ t("admin.settings.oidc.requireEmailVerified") }}
                       </label>
                     </div>
@@ -3106,10 +3106,10 @@
               <div class="border-t border-gray-100 pt-4 dark:border-dark-700">
                 <div class="mb-3 flex items-center justify-between">
                   <div>
-                    <label class="font-medium text-gray-900 dark:text-white">
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                       {{ t("admin.settings.defaults.defaultSubscriptions") }}
                     </label>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                    <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                       {{
                         t("admin.settings.defaults.defaultSubscriptionsHint")
                       }}
@@ -3259,10 +3259,10 @@
                 class="flex items-center justify-between rounded border border-gray-200 px-4 py-3 dark:border-dark-700"
               >
                 <div>
-                  <label class="font-medium text-gray-900 dark:text-white">
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                     {{ t("admin.settings.authSourceDefaults.requireEmailLabel") }}
                   </label>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.authSourceDefaults.requireEmailHint") }}
                   </p>
                 </div>
@@ -3277,7 +3277,7 @@
                 >
                   <div class="flex items-center justify-between gap-4">
                     <div>
-                      <div class="font-medium text-gray-900 dark:text-white">
+                      <div class="text-sm font-medium text-gray-700 dark:text-gray-300">
                         {{ authSource.title }}
                       </div>
                       <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -3297,7 +3297,7 @@
                     :data-testid="`auth-source-${authSource.source}-panel`"
                     class="mt-4 space-y-4 border-t border-gray-100 pt-4 dark:border-dark-700"
                   >
-                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                    <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.authSourceDefaults.enabledHint") }}
                     </p>
 
@@ -3342,7 +3342,7 @@
                     >
                       <div>
                         <label
-                          class="font-medium text-gray-900 dark:text-white"
+                          class="text-sm font-medium text-gray-700 dark:text-gray-300"
                         >
                           {{ t("admin.settings.authSourceDefaults.grantOnFirstBindLabel") }}
                         </label>
@@ -3363,11 +3363,11 @@
                     <div class="mb-3 flex items-center justify-between">
                       <div>
                         <label
-                          class="font-medium text-gray-900 dark:text-white"
+                          class="text-sm font-medium text-gray-700 dark:text-gray-300"
                         >
                           {{ t("admin.settings.authSourceDefaults.defaultSubscriptionsLabel") }}
                         </label>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                        <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                           {{ t("admin.settings.authSourceDefaults.defaultSubscriptionsHint") }}
                         </p>
                       </div>
@@ -4553,10 +4553,10 @@
                 class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div>
-                  <label class="font-medium text-gray-900 dark:text-white">{{
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
                     t("admin.settings.site.hideCcsImportButton")
                   }}</label>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.site.hideCcsImportButtonHint") }}
                   </p>
                 </div>
@@ -5343,7 +5343,7 @@
                   class="flex items-center justify-between rounded-md border border-primary-200 bg-primary-50 px-3 py-2 dark:border-primary-700/50 dark:bg-primary-900/20"
                 >
                   <div class="text-sm">
-                    <span class="font-medium text-gray-900 dark:text-white">{{ affiliateModal.selectedUser.email }}</span>
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ affiliateModal.selectedUser.email }}</span>
                     <span class="ml-1 text-xs text-gray-500">({{ affiliateModal.selectedUser.username }})</span>
                   </div>
                   <button
@@ -5535,10 +5535,10 @@
               <!-- Enable toggle -->
               <div class="flex items-center justify-between">
                 <div>
-                  <label class="font-medium text-gray-900 dark:text-white">{{
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
                     t("admin.settings.payment.enabled")
                   }}</label>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.payment.enabledHint") }}
                   </p>
                 </div>
@@ -5959,10 +5959,10 @@
           <div class="border-t border-gray-100 pt-6 dark:border-dark-700">
             <div class="flex items-center justify-between">
               <div>
-                <label class="font-medium text-gray-900 dark:text-white">{{
+                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
                   t("admin.settings.payment.purchaseSubscriptionEnabled")
                 }}</label>
-                <p class="text-sm text-gray-500 dark:text-gray-400">
+                <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                   {{ t("admin.settings.payment.purchaseSubscriptionEnabledHint") }}
                 </p>
               </div>
@@ -5996,7 +5996,7 @@
                   class="mt-0.5 flex-shrink-0 text-gray-400 dark:text-gray-500"
                 />
                 <div>
-                  <h3 class="font-medium text-gray-900 dark:text-white">
+                  <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">
                     {{ t("admin.settings.emailTabDisabledTitle") }}
                   </h3>
                   <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -6158,10 +6158,10 @@
                 class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div>
-                  <label class="font-medium text-gray-900 dark:text-white">{{
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
                     t("admin.settings.smtp.useTls")
                   }}</label>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.smtp.useTlsHint") }}
                   </p>
                 </div>
