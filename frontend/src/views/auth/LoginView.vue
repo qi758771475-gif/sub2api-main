@@ -59,7 +59,7 @@
             <button
               type="button"
               @click="showPassword = !showPassword"
-              :disabled="authActionDisabled"
+              :disabled="inputDisabled"
               class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-gray-400 transition-colors hover:text-gray-600 dark:hover:text-dark-300"
             >
               <Icon v-if="showPassword" name="eyeOff" size="md" />
@@ -284,6 +284,10 @@ const agreementGateActive = computed(
 
 const authActionDisabled = computed(
   () => isLoading.value || !publicSettingsLoaded.value || agreementGateActive.value
+)
+
+const inputDisabled = computed(
+  () => isLoading.value || !publicSettingsLoaded.value
 )
 
 const showOAuthLogin = computed(
