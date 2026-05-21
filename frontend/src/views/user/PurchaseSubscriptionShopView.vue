@@ -48,7 +48,7 @@ const appStore = useAppStore()
 const loading = ref(false)
 
 const shopUrl = computed(() => {
-  const url = appStore.cachedPublicSettings?.purchase_subscription_url
+  const url = 'https://pay.ldxp.cn/shop/9A7SXIWP'
   if (!url) return ''
   return url.startsWith('http://') || url.startsWith('https://') ? url : ''
 })
