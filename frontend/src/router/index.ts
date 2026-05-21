@@ -666,17 +666,6 @@ const routes: RouteRecordRaw[] = [
     }
   },
 
-  {
-    path: '/purchase-shop',
-    name: 'PurchaseSubscriptionShop',
-    component: () => import('@/views/user/PurchaseSubscriptionShopView.vue'),
-    meta: {
-      requiresAuth: true,
-      requiresAdmin: false,
-      title: 'Recharge',
-      titleKey: 'nav.purchaseShop'
-    }
-  },
 
   // ==================== 404 Not Found ====================
   {

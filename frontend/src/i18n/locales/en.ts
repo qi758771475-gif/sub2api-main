@@ -373,7 +373,6 @@ export default {
     mySubscriptions: 'My Subscriptions',
     buySubscription: 'Recharge / Subscription',
     docs: 'Docs',
-    purchaseShop: 'Purchase Shop',
     docsGuide: 'Configuration Guide',
     myOrders: 'My Orders',
     orderManagement: 'Orders',
