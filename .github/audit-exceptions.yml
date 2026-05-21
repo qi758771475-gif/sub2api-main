@@ -28,6 +28,13 @@ exceptions:
     mitigation: "No user-controlled template strings; plan to migrate to native JS alternatives"
     expires_on: "2026-07-02"
     owner: "security@your-domain"
+  - package: js-cookie
+    advisory: "GHSA-qjx8-664m-686j"
+    severity: high
+    reason: "Cookie manipulation only via internal admin UI; no user-controlled input leads to cookie injection"
+    mitigation: "Already migrate to hand-rolled cookie helpers; plan to remove js-cookie dependency"
+    expires_on: "2026-08-22"
+    owner: "security@your-domain"
   - package: axios
     advisory: "GHSA-3p68-rc4w-qgx5"
     severity: critical
