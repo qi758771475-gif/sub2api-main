@@ -7081,8 +7081,6 @@ const form = reactive<SettingsForm>({
   // Affiliate (邀请返利) feature switch
   affiliate_enabled: false,
   affiliate_link_force_bind: false,
-  purchase_subscription_enabled: false,
-  purchase_subscription_url: "https://pay.ldxp.cn/shop/9A7SXIWP",
   feishu_notify_enabled: false,
   feishu_notify_webhook_url: "",
   feishu_notify_recharge_enabled: true,
@@ -8222,8 +8220,6 @@ async function saveSettings() {
       // Affiliate (邀请返利) feature switch
       affiliate_enabled: form.affiliate_enabled,
       affiliate_link_force_bind: form.affiliate_link_force_bind,
-      purchase_subscription_enabled: form.purchase_subscription_enabled,
-      purchase_subscription_url: form.purchase_subscription_url || "",
       feishu_notify_enabled: form.feishu_notify_enabled,
       feishu_notify_webhook_url: form.feishu_notify_webhook_url,
       feishu_notify_recharge_enabled: form.feishu_notify_recharge_enabled,
