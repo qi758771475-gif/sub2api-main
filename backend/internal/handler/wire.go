@@ -104,6 +104,7 @@ func ProvideHandlers(
 	availableChannelHandler *AvailableChannelHandler,
 	_ *service.IdempotencyCoordinator,
 	_ *service.IdempotencyCleanupService,
+	internalBillingHandler *InternalBillingHandler,
 ) *Handlers {
 	return &Handlers{
 		Auth:             authHandler,
@@ -122,12 +123,14 @@ func ProvideHandlers(
 		Payment:          paymentHandler,
 		PaymentWebhook:   paymentWebhookHandler,
 		AvailableChannel: availableChannelHandler,
+		InternalBilling:  internalBillingHandler,
 	}
 }
 
 // ProviderSet is the Wire provider set for all handlers
 var ProviderSet = wire.NewSet(
 	// Top-level handlers
+	NewInternalBillingHandler,
 	NewAuthHandler,
 	NewUserHandler,
 	NewAPIKeyHandler,

@@ -115,3 +115,9 @@ func registerRoutes(
 
 	handler.RegisterPageRoutes(v1, cfg.Pricing.DataDir, gin.HandlerFunc(jwtAuth), gin.HandlerFunc(adminAuth), settingService)
 }
+
+// SetupInternalRoutes registers internal billing routes (not public).
+func SetupInternalRoutes(r *gin.Engine, billingHandler *handler.InternalBillingHandler) {
+	g := r.Group("/api/v1/internal/billing")
+	billingHandler.RegisterRoutes(g)
+}

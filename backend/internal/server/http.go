@@ -95,7 +95,11 @@ func ProvideRouter(
 		service.SetWebSearchManager(websearch.NewManager(configs, redisClient))
 	})
 
-	return SetupRouter(r, handlers, jwtAuth, adminAuth, apiKeyAuth, apiKeyService, subscriptionService, opsService, settingService, cfg, redisClient)
+	router := SetupRouter(r, handlers, jwtAuth, adminAuth, apiKeyAuth, apiKeyService, subscriptionService, opsService, settingService, cfg, redisClient)
+	if handlers.InternalBilling != nil {
+		SetupInternalRoutes(r, handlers.InternalBilling)
+	}
+	return router
 }
 
 // ProvideHTTPServer 提供 HTTP 服务器
