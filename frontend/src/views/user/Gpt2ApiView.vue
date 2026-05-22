@@ -6,8 +6,7 @@
 import { computed } from 'vue'
 
 const gpt2apiUrl = computed(() => {
-  const base = import.meta.env.VITE_GPT2API_URL || 'http://127.0.0.1:17200'
   const token = localStorage.getItem('auth_token')
-  return `${base}?token=${token || ''}`
+  return `/gpt2api?token=${token || ''}`
 })
 </script>
