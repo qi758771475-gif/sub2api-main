@@ -97,7 +97,7 @@ func ProvideRouter(
 
 	router := SetupRouter(r, handlers, jwtAuth, adminAuth, apiKeyAuth, apiKeyService, subscriptionService, opsService, settingService, cfg, redisClient)
 	if handlers.InternalBilling != nil {
-		SetupInternalRoutes(r, handlers.InternalBilling, apiKeyAuth)
+		SetupInternalRoutes(r, handlers.InternalBilling)
 	}
 	return router
 }

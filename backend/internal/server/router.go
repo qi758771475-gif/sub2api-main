@@ -117,8 +117,7 @@ func registerRoutes(
 }
 
 // SetupInternalRoutes registers internal billing routes (not public).
-func SetupInternalRoutes(r *gin.Engine, billingHandler *handler.InternalBillingHandler, apiKeyAuth middleware2.APIKeyAuthMiddleware) {
+func SetupInternalRoutes(r *gin.Engine, billingHandler *handler.InternalBillingHandler) {
 	g := r.Group("/api/v1/internal/billing")
-	g.Use(gin.HandlerFunc(apiKeyAuth))
 	billingHandler.RegisterRoutes(g)
 }

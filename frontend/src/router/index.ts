@@ -667,6 +667,18 @@ const routes: RouteRecordRaw[] = [
   },
 
 
+  {
+    path: '/gpt2api',
+    name: 'Gpt2Api',
+    component: () => import('@/views/user/Gpt2ApiView.vue'),
+    meta: {
+      requiresAuth: true,
+      requiresAdmin: false,
+      title: 'Images',
+      titleKey: 'nav.gpt2api'
+    }
+  },
+
   // ==================== 404 Not Found ====================
   {
     path: '/:pathMatch(.*)*',
