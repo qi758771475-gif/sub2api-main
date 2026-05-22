@@ -1,40 +1,45 @@
 package handler
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 	"os"
 	"sync"
 	"time"
 
+	"github.com/Wei-Shaw/sub2api/ent"
+	"github.com/Wei-Shaw/sub2api/internal/service"
 	"github.com/gin-gonic/gin"
 )
 
 // InternalBillingHandler handles internal billing operations from gpt2api.
-// Authentication is via shared secret (X-Internal-Secret header).
-// user_id is passed in the request body for audit trail.
+// Shared secret auth (X-Internal-Secret) + user_id in request body.
 type InternalBillingHandler struct {
-	secret string
-	mu     sync.Mutex
-	frozen map[string]*frozenBalance
+	secret   string
+	userRepo service.UserRepository
+	entClient *ent.Client
+	mu       sync.Mutex
+	frozen   map[string]*frozenBalance
 }
 
 type frozenBalance struct {
-	UserID  uint64
-	Amount  float64
-	Model   string
-	Expires time.Time
+	UserID uint64
+	Amount float64
+	Model  string
 }
 
 // NewInternalBillingHandler creates the handler.
-func NewInternalBillingHandler() *InternalBillingHandler {
+func NewInternalBillingHandler(userRepo service.UserRepository, entClient *ent.Client) *InternalBillingHandler {
 	secret := os.Getenv("INTERNAL_SECRET")
 	if secret == "" {
 		secret = "sub2api-internal-secret-change-me"
 	}
 	return &InternalBillingHandler{
-		secret: secret,
-		frozen: make(map[string]*frozenBalance),
+		secret:   secret,
+		userRepo: userRepo,
+		entClient: entClient,
+		frozen:   make(map[string]*frozenBalance),
 	}
 }
 
@@ -62,6 +67,7 @@ type preDeductResp struct {
 	Error    string `json:"error,omitempty"`
 }
 
+// PreDeduct checks balance and freezes the amount.
 func (h *InternalBillingHandler) PreDeduct(c *gin.Context) {
 	if !h.checkSecret(c) {
 		c.JSON(http.StatusForbidden, preDeductResp{Error: "unauthorized"})
@@ -69,8 +75,19 @@ func (h *InternalBillingHandler) PreDeduct(c *gin.Context) {
 	}
 
 	var req preDeductReq
-	if err := c.ShouldBindJSON(&req); err != nil || req.Amount <= 0 {
+	if err := c.ShouldBindJSON(&req); err != nil || req.Amount <= 0 || req.UserID == 0 {
 		c.JSON(http.StatusBadRequest, preDeductResp{Error: "invalid request"})
+		return
+	}
+
+	ctx := context.Background()
+	user, err := h.entClient.User.Get(ctx, int64(req.UserID))
+	if err != nil {
+		c.JSON(http.StatusNotFound, preDeductResp{Error: "user not found"})
+		return
+	}
+	if user.Balance < req.Amount {
+		c.JSON(http.StatusPaymentRequired, preDeductResp{Error: "insufficient balance"})
 		return
 	}
 
@@ -80,12 +97,7 @@ func (h *InternalBillingHandler) PreDeduct(c *gin.Context) {
 	}
 
 	h.mu.Lock()
-	h.frozen[frozenID] = &frozenBalance{
-		UserID:  req.UserID,
-		Amount:  req.Amount,
-		Model:   req.Model,
-		Expires: time.Now().Add(10 * time.Minute),
-	}
+	h.frozen[frozenID] = &frozenBalance{UserID: req.UserID, Amount: req.Amount, Model: req.Model}
 	h.mu.Unlock()
 
 	slog.Info("internal.billing.pre_deduct", "user_id", req.UserID, "amount", req.Amount, "model", req.Model, "frozen_id", frozenID)
@@ -102,6 +114,7 @@ type settleResp struct {
 	Error   string `json:"error,omitempty"`
 }
 
+// Settle actually deducts the frozen amount from the user's balance.
 func (h *InternalBillingHandler) Settle(c *gin.Context) {
 	if !h.checkSecret(c) {
 		c.JSON(http.StatusForbidden, settleResp{Error: "unauthorized"})
@@ -126,6 +139,13 @@ func (h *InternalBillingHandler) Settle(c *gin.Context) {
 		return
 	}
 
+	// Actually deduct from user balance
+	if err := h.userRepo.DeductBalance(context.Background(), int64(frozen.UserID), frozen.Amount); err != nil {
+		slog.Error("internal.billing.settle.deduct_failed", "user_id", frozen.UserID, "amount", frozen.Amount, "error", err)
+		c.JSON(http.StatusInternalServerError, settleResp{Error: "deduct failed"})
+		return
+	}
+
 	slog.Info("internal.billing.settle", "user_id", frozen.UserID, "amount", frozen.Amount, "model", frozen.Model)
 
 	c.JSON(http.StatusOK, settleResp{Success: true})
@@ -140,6 +160,7 @@ type refundResp struct {
 	Error   string `json:"error,omitempty"`
 }
 
+// Refund releases a frozen balance without deduction.
 func (h *InternalBillingHandler) Refund(c *gin.Context) {
 	if !h.checkSecret(c) {
 		c.JSON(http.StatusForbidden, refundResp{Error: "unauthorized"})
@@ -153,7 +174,7 @@ func (h *InternalBillingHandler) Refund(c *gin.Context) {
 	}
 
 	h.mu.Lock()
-	frozen, ok := h.frozen[req.FrozenID]
+	_, ok := h.frozen[req.FrozenID]
 	if ok {
 		delete(h.frozen, req.FrozenID)
 	}
@@ -164,29 +185,7 @@ func (h *InternalBillingHandler) Refund(c *gin.Context) {
 		return
 	}
 
-	slog.Info("internal.billing.refund", "user_id", frozen.UserID, "amount", frozen.Amount, "model", frozen.Model)
+	slog.Info("internal.billing.refund", "frozen_id", req.FrozenID)
 
 	c.JSON(http.StatusOK, refundResp{Success: true})
-}
-
-func (h *InternalBillingHandler) StartCleanup(interval time.Duration) {
-	go func() {
-		ticker := time.NewTicker(interval)
-		defer ticker.Stop()
-		for range ticker.C {
-			h.cleanupExpired()
-		}
-	}()
-}
-
-func (h *InternalBillingHandler) cleanupExpired() {
-	h.mu.Lock()
-	defer h.mu.Unlock()
-	now := time.Now()
-	for id, fb := range h.frozen {
-		if now.After(fb.Expires) {
-			slog.Info("internal.billing.expired_refund", "frozen_id", id, "user_id", fb.UserID, "amount", fb.Amount)
-			delete(h.frozen, id)
-		}
-	}
 }
