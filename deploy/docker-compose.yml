@@ -48,6 +48,7 @@ services:
       - SERVER_PORT=8080
       - SERVER_MODE=${SERVER_MODE:-release}
       - RUN_MODE=${RUN_MODE:-standard}
+      - INTERNAL_SECRET=${INTERNAL_SECRET:-sub2api-internal-secret-change-me}
 
       # =======================================================================
       # Database Configuration (PostgreSQL)
