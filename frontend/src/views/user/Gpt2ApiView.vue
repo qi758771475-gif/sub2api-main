@@ -7,6 +7,6 @@ import { computed } from 'vue'
 
 const gpt2apiUrl = computed(() => {
   const token = localStorage.getItem('auth_token')
-  return `/gpt2api?token=${token || ''}`
+  return `https://gptimage.oneapi.cam?token=${token || ''}`
 })
 </script>
