@@ -668,6 +668,7 @@ func (s *SettingService) GetPublicSettings(ctx context.Context) (*PublicSettings
 		SettingKeyChannelMonitorEnabled,
 		SettingKeyChannelMonitorDefaultIntervalSeconds,
 		SettingKeyAvailableChannelsEnabled,
+		SettingKeyGpt2apiEnabled,
 		SettingKeyAffiliateEnabled,
 		SettingKeyAffiliateLinkForceBind,
 		SettingKeyRiskControlEnabled,
@@ -779,6 +780,7 @@ func (s *SettingService) GetPublicSettings(ctx context.Context) (*PublicSettings
 		ChannelMonitorDefaultIntervalSeconds: parseChannelMonitorInterval(settings[SettingKeyChannelMonitorDefaultIntervalSeconds]),
 
 		AvailableChannelsEnabled: settings[SettingKeyAvailableChannelsEnabled] == "true",
+		Gpt2apiEnabled: settings[SettingKeyGpt2apiEnabled] == "true",
 
 		AffiliateEnabled:       settings[SettingKeyAffiliateEnabled] == "true",
 		AffiliateLinkForceBind: settings[SettingKeyAffiliateLinkForceBind] == "true",

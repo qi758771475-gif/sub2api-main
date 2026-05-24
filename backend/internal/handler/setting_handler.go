@@ -84,6 +84,8 @@ func (h *SettingHandler) GetPublicSettings(c *gin.Context) {
 
 		AvailableChannelsEnabled: settings.AvailableChannelsEnabled,
 
+		Gpt2apiEnabled: settings.Gpt2apiEnabled,
+
 		AffiliateEnabled:       settings.AffiliateEnabled,
 		AffiliateLinkForceBind: settings.AffiliateLinkForceBind,
 
