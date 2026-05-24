@@ -285,7 +285,7 @@ func (h *SettingHandler) GetSettings(c *gin.Context) {
 		ChannelMonitorDefaultIntervalSeconds: settings.ChannelMonitorDefaultIntervalSeconds,
 
 		AvailableChannelsEnabled: settings.AvailableChannelsEnabled,
-		Gpt2apiEnabled:              settings.Gpt2apiEnabled,
+		Gpt2apiEnabled:           settings.Gpt2apiEnabled,
 
 		// Feishu webhook notification
 		FeishuNotifyEnabled:         settings.FeishuNotifyEnabled,
@@ -620,7 +620,7 @@ type UpdateSettingsRequest struct {
 
 	// Available Channels feature switch (user-facing)
 	AvailableChannelsEnabled *bool `json:"available_channels_enabled"`
-	Gpt2apiEnabled              *bool   `json:"gpt2api_enabled"`
+	Gpt2apiEnabled           *bool `json:"gpt2api_enabled"`
 
 	// Affiliate (邀请返利) feature switch
 	AffiliateEnabled       *bool `json:"affiliate_enabled"`
@@ -2043,7 +2043,7 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		ChannelMonitorDefaultIntervalSeconds: updatedSettings.ChannelMonitorDefaultIntervalSeconds,
 
 		AvailableChannelsEnabled: updatedSettings.AvailableChannelsEnabled,
-		Gpt2apiEnabled:              updatedSettings.Gpt2apiEnabled,
+		Gpt2apiEnabled:           updatedSettings.Gpt2apiEnabled,
 
 		AffiliateEnabled:       updatedSettings.AffiliateEnabled,
 		AffiliateLinkForceBind: updatedSettings.AffiliateLinkForceBind,

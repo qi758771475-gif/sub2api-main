@@ -16,11 +16,11 @@ import (
 // InternalBillingHandler handles internal billing operations from gpt2api.
 // Shared secret auth (X-Internal-Secret) + user_id in request body.
 type InternalBillingHandler struct {
-	secret   string
-	userRepo service.UserRepository
+	secret    string
+	userRepo  service.UserRepository
 	entClient *ent.Client
-	mu       sync.Mutex
-	frozen   map[string]*frozenBalance
+	mu        sync.Mutex
+	frozen    map[string]*frozenBalance
 }
 
 type frozenBalance struct {
@@ -36,10 +36,10 @@ func NewInternalBillingHandler(userRepo service.UserRepository, entClient *ent.C
 		secret = "sub2api-internal-secret-change-me"
 	}
 	return &InternalBillingHandler{
-		secret:   secret,
-		userRepo: userRepo,
+		secret:    secret,
+		userRepo:  userRepo,
 		entClient: entClient,
-		frozen:   make(map[string]*frozenBalance),
+		frozen:    make(map[string]*frozenBalance),
 	}
 }
 
