@@ -1,8 +1,12 @@
-<script setup lang="ts">
-import { onMounted } from 'vue'
+<template>
+  <iframe :src="gpt2apiUrl" class="h-screen w-full border-0" />
+</template>
 
-onMounted(() => {
+<script setup lang="ts">
+import { computed } from 'vue'
+
+const gpt2apiUrl = computed(() => {
   const token = localStorage.getItem('auth_token')
-  window.location.href = `https://gptimage.oneapi.cam?token=${token || ''}`
+  return `https://gptimage.oneapi.cam?token=${token || ''}`
 })
 </script>
