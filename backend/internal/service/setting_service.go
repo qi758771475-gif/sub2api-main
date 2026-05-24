@@ -989,6 +989,7 @@ type PublicSettingsInjectionPayload struct {
 	ChannelMonitorEnabled                bool `json:"channel_monitor_enabled"`
 	ChannelMonitorDefaultIntervalSeconds int  `json:"channel_monitor_default_interval_seconds"`
 	AvailableChannelsEnabled             bool `json:"available_channels_enabled"`
+		Gpt2apiEnabled                       bool                     `json:"gpt2api_enabled"`
 	AffiliateEnabled                     bool `json:"affiliate_enabled"`
 	AffiliateLinkForceBind               bool `json:"affiliate_link_force_bind"`
 	RiskControlEnabled                   bool `json:"risk_control_enabled"`
@@ -1052,6 +1053,7 @@ func (s *SettingService) GetPublicSettingsForInjection(ctx context.Context) (any
 		ChannelMonitorEnabled:                settings.ChannelMonitorEnabled,
 		ChannelMonitorDefaultIntervalSeconds: settings.ChannelMonitorDefaultIntervalSeconds,
 		AvailableChannelsEnabled:             settings.AvailableChannelsEnabled,
+			Gpt2apiEnabled:                       settings.Gpt2apiEnabled,
 		AffiliateEnabled:                     settings.AffiliateEnabled,
 		AffiliateLinkForceBind:               settings.AffiliateLinkForceBind,
 		RiskControlEnabled:                   settings.RiskControlEnabled,
