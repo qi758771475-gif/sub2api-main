@@ -175,7 +175,8 @@ type SystemSettings struct {
 	ChannelMonitorDefaultIntervalSeconds int  `json:"channel_monitor_default_interval_seconds"`
 
 	// Available Channels feature (user-facing aggregate view)
-	AvailableChannelsEnabled bool `json:"available_channels_enabled"`
+	AvailableChannelsEnabled bool
+	Gpt2apiEnabled             bool `json:"available_channels_enabled"`
 
 	// Claude Code version check
 	MinClaudeCodeVersion string
@@ -286,6 +287,7 @@ type PublicSettings struct {
 
 	// Available Channels feature (user-facing aggregate view)
 	AvailableChannelsEnabled bool `json:"available_channels_enabled"`
+	Gpt2apiEnabled             bool `json:"gpt2api_enabled"`
 
 	// Affiliate (邀请返利) feature toggle
 	AffiliateEnabled       bool `json:"affiliate_enabled"`

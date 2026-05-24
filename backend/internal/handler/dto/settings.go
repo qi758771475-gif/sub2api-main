@@ -238,6 +238,7 @@ type SystemSettings struct {
 
 	// Available Channels feature switch (user-facing aggregate view)
 	AvailableChannelsEnabled bool `json:"available_channels_enabled"`
+	Gpt2apiEnabled                       bool            `json:"gpt2api_enabled"`
 
 	// 风控中心功能开关
 	RiskControlEnabled bool `json:"risk_control_enabled"`
@@ -308,6 +309,7 @@ type PublicSettings struct {
 	ChannelMonitorDefaultIntervalSeconds int  `json:"channel_monitor_default_interval_seconds"`
 
 	AvailableChannelsEnabled bool `json:"available_channels_enabled"`
+	Gpt2apiEnabled                       bool            `json:"gpt2api_enabled"`
 
 	AffiliateEnabled       bool `json:"affiliate_enabled"`
 	AffiliateLinkForceBind bool `json:"affiliate_link_force_bind"`

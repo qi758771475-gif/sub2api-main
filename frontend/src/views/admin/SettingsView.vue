@@ -7078,6 +7078,7 @@ const form = reactive<SettingsForm>({
   channel_monitor_default_interval_seconds: 60,
   // Available Channels feature switch
   available_channels_enabled: false,
+  gpt2api_enabled: false,
   // Affiliate (邀请返利) feature switch
   affiliate_enabled: false,
   affiliate_link_force_bind: false,
@@ -8217,6 +8218,7 @@ async function saveSettings() {
         Number(form.channel_monitor_default_interval_seconds) || 60,
       // Available Channels feature switch
       available_channels_enabled: form.available_channels_enabled,
+      gpt2api_enabled: form.gpt2api_enabled,
       // Affiliate (邀请返利) feature switch
       affiliate_enabled: form.affiliate_enabled,
       affiliate_link_force_bind: form.affiliate_link_force_bind,

@@ -115,6 +115,12 @@ export const FeatureFlags = {
     label: 'Risk Control',
   }),
 
+  gpt2api: defineFlag({
+    key: 'gpt2api_enabled',
+    mode: 'opt-in',
+    label: 'GPT2API Image Generation',
+  }),
+
   affiliate: defineFlag({
     key: 'affiliate_enabled',
     mode: 'opt-in',
