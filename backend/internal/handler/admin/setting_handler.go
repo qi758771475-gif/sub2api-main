@@ -1691,6 +1691,12 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 			}
 			return previousSettings.AvailableChannelsEnabled
 		}(),
+		Gpt2apiEnabled: func() bool {
+			if req.Gpt2apiEnabled != nil {
+				return *req.Gpt2apiEnabled
+			}
+			return previousSettings.Gpt2apiEnabled
+		}(),
 		AffiliateEnabled: func() bool {
 			if req.AffiliateEnabled != nil {
 				return *req.AffiliateEnabled
