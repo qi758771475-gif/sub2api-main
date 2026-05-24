@@ -374,6 +374,7 @@ export default {
     buySubscription: 'Recharge / Subscription',
     docs: 'Docs',
     docsGuide: 'Configuration Guide',
+    gpt2api: 'AI Images',
     myOrders: 'My Orders',
     orderManagement: 'Orders',
     paymentDashboard: 'Payment Dashboard',

@@ -374,6 +374,7 @@ export default {
     buySubscription: '充值/订阅',
     docs: '文档',
     docsGuide: '配置教程',
+    gpt2api: '图片生成',
     myOrders: '我的订单',
     orderManagement: '订单管理',
     paymentDashboard: '支付概览',
