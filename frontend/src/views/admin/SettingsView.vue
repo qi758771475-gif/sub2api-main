@@ -5046,6 +5046,31 @@
           </div>
         </div>
 
+        <!-- GPT2API Image Generation -->
+        <div class="card">
+          <div class="border-b border-gray-100 px-6 py-4 dark:border-dark-700">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+              GPT2API
+            </h2>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              开启后侧边栏显示图片生成入口，用户可通过 iframe 使用 GPT2API 生图。
+            </p>
+          </div>
+          <div class="space-y-5 p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  启用图片生成
+                </label>
+                <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                  开启后用户侧边栏出现图片生成菜单。
+                </p>
+              </div>
+              <Toggle v-model="form.gpt2api_enabled" />
+            </div>
+          </div>
+        </div>
+
         <div class="card">
           <div class="border-b border-gray-100 px-6 py-4 dark:border-dark-700">
             <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
